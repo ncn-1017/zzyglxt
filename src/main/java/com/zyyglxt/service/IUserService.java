@@ -17,7 +17,7 @@ public interface IUserService {
 
     int Login(String username, String password) throws BusinessException;
 
-    Result UpdatePassword(UpdatePwdDto updatePwdDto);
+    int UpdatePassword(UpdatePwdDto updatePwdDto);
 
     UserDO selectOne();
 
