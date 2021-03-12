@@ -1,5 +1,5 @@
 (function() {
-    define('bootstrapTableUtil', ['jquery','objectUtil','ajaxUtil','stringUtil','myBootstrapTable'], function(jquery,objectUtil,ajaxUtil,stringUtil) {
+    define('bootstrapTableUtil', ['jquery','objectUtil','ajaxUtil','stringUtil','alertUtil','myBootstrapTable'], function(jquery,objectUtil,ajaxUtil,stringUtil,alertUtil) {
 
         $.extend($.fn.bootstrapTable.defaults, $.fn.bootstrapTable.locales['zh-CN']);
 
@@ -31,8 +31,8 @@
                 sortOrder: "asc",                   //排序方式
                 sidePagination: "client",           //分页方式：client客户端分页，server服务端分页（*）
                 page: 1,                      //初始化加载第一页，默认第一页,并记录
-                pageSize: 5,                       //每页的记录行数（*）
-                pageList: [5, 10, 20, 50],        //可供选择的每页的行数（*）
+                pageSize: 10,                       //每页的记录行数（*）
+                pageList: [10, 20, 30, 50],        //可供选择的每页的行数（*）
                 paginationPreText: '上一页',
                 paginationNextText: '下一页',
                 // showColumns: true,               //是否显示所有的列（选择显示的列）
@@ -57,9 +57,7 @@
                 width: '100%',
                 columns: fColumns,
                 ajaxOptions: {
-
                     complete: function (XMLHttpRequest) {
-
                     }
                 },
                 responseHandler: function (data) {
@@ -67,9 +65,9 @@
                         window.location.href = "/userLogin";
                     }
                     if (data.code === 88888) {
-                        for(var i=0; i<data.data.length; i++){
-                            data.data[i].itemcreateat = stringUtil.formatDateTime(data.data[i].itemcreateat);
-                        }
+                        // for(var i=0; i<data.data.length; i++){
+                        //     data.data[i].itemcreateat = stringUtil.formatDateTime(data.data[i].itemcreateat);
+                        // }
                         var allTableData = data.data
                         localStorage.setItem('2',JSON.stringify(allTableData))
                         return {
@@ -113,160 +111,92 @@
 
 
 
-        function globalSearch(tableID,url,needParam,aCol) {
+        function globalSearch(tableID, url, needParam, aCol, statusWord) {
             $("#btnSearch").unbind().on('click',function() {
-                if(document.getElementById("stratTime")){
-                    var stratTime=document.getElementById("stratTime").children;
-                    var endTime=document.getElementById("endTime").children;
-                    stratTime=stratTime[0].value+":"+stratTime[1].value+":"+stratTime[2].value;
-                    endTime=endTime[0].value+":"+endTime[1].value+":"+endTime[2].value;
-                }
                 var newArry = [];
-                var addstr=document.getElementById("chargePersonSearch").value;
+                var addstr=document.getElementById("chargePersonSearch").value; //搜索里的
                 var str = document.getElementById("taskNameSearch").value.toLowerCase();
                 var allTableData = JSON.parse(localStorage.getItem("2"));
-
-                if (str==='请输入'||str===''){
-                    str=''
+                if(str.indexOf("请输入")!=-1){
+                    str=""
                 }
                 for (var i in allTableData) {
                     for (var v in aCol){
                         var textP = allTableData[i][aCol[v].field];
-                        var isTimeSlot=false;
-                        var makeTime=allTableData[i][aCol[3].field];
-                        if(makeTime.length>18){
-                            makeTime=makeTime.substring(11,19);
+                        var isStatusSlot=false;           // 默认状态为true
+                        //状态条件判断,与表格字段的状态一致,这里根据自己写的修改
+                        var status= allTableData[i][statusWord] //表格里的
+                        // console.log("addstr:"+addstr)
+                        // console.log("status:"+status)
+                        //调试时可以先打印出来，进行修改
+                        if(addstr==status || addstr==99){
+                            isStatusSlot=true;
                         }
                         if (textP == null || textP == undefined || textP == '') {
                             textP = "1";
                         }
-                        if(makeTime>=stratTime && makeTime<=endTime){
-                            isTimeSlot=true;
-                        }
-                        if(stratTime==endTime){
-                            isTimeSlot=true;
-                        }
-
-                        if (textP.search(str)!= -1&&isTimeSlot){
-                            newArry.push(allTableData[i]);
-                        }
-                        if (addstr=="展示中"||addstr=="已下架"){
-                            str=str+" "+addstr;
-                            var arr=str.split(' ');
-                            for(var j=0;j<arr.length;j++)
-                            {
-                                if(textP.search(arr[j])!=-1){
-                                    newArry.push(allTableData[i]);
-                                }
-                            }
+                        if(textP.search(str) != -1 && isStatusSlot){
+                            newArry.push(allTableData[i])
                         }
                     }
                 }
-
                 var newArr=new Set(newArry)
                 newArry=Array.from(newArr)
                 $("#table").bootstrapTable("load", newArry);
+                // if(newArry.length == 0){
+                //     alertUtil.warning("搜索成功,但此搜索条件下没有数据");
+                // }else{
+                //     alertUtil.success("搜索成功");
+                // }
             })
 
+        }
 
-            //
-
-            // var oTab=document.getElementById("table");
-            // var btnSearch=document.getElementById("btnSearch");
-            //var param = {};
-            // btnSearch.onclick=function(){
-            //     var newArry=[];
-            //     var str=document.getElementById("taskNameSearch").value.toLowerCase();
-            //     var allTableData = $("#table").bootstrapTable("getData");
-            //      (allTableData);
-            //     for(var i in allTableData){
-            //         var chineseCulturalName = allTableData[i][chineseCulturalName];
-            //
-            //         if (chineseCulturalName.search(chineseCulturalName)!=-1){
-            //             newArry.push(allTableData[i]);
-            //         }
-            //     }
-            //     $("#table").bootstrapTable("load",newArry);
-
-
-
-            // var stratTime=document.getElementById("stratTime").children;
-            // var endTime=document.getElementById("endTime").children;
-            // stratTime=stratTime[0].value+":"+stratTime[1].value+":"+stratTime[2].value;
-            // endTime=endTime[0].value+":"+endTime[1].value+":"+endTime[2].value;
-            //
-            //  (oTab.tHead.rows[0].childNodes[5].innerText);
-            // for(var i=0;i<oTab.tBodies[0].rows.length;i++)
-            // {
-            //     var str1=oTab.tBodies[0].rows[i].innerText.toLowerCase();
-            //     var str2=oBt.value.toLowerCase();
-            //      (oTab.tBodies[0].rows);
-            //     var time=oTab.tBodies[0].rows[i].childNodes[5].innerText;
-            //     time=time.substring(11,19)
-            //      (time>stratTime);
-            //      (time<endTime);
-            //      (time)
-            //     if (str2==="请输入"){
-            //         myTable.free();
-            //         myTable = myBootStrapTableInit(tableID,url,param,aCol)
-            //     }
-            /***********************************JS实现表格的模糊搜索*************************************/
-            //表格的模糊搜索的就是通过JS中的一个search()方法，使用格式，string1.search(string2);如果
-            //用户输入的字符串是其一个子串，就会返回该子串在主串的位置，不匹配则会返回-1，故操作如下
-            // if(str1.search(str2)!=-1){
-            //     oTab.tBodies[0].rows[i].hidden= false;
-            // if (startTime=endTime||stratTime>time||endTime<time){
-            //     oTab.tBodies[0].rows[i].hidden= true;
-            // }
-            // }
-            // else{
-            //     oTab.tBodies[0].rows[i].hidden= true;
-            // if (stratTime<time&&time<endTime){
-            //     oTab.tBodies[0].rows[i].hidden= false;
-            // }
-            // }
-            /***********************************JS实现表格的多关键字搜索********************************/
-                //表格的多关键字搜索，加入用户所输入的多个关键字之间用空格隔开，就用split方法把一个长字符串以空格为标准，分成一个字符串数组，
-                //然后以一个循环将切成的数组的子字符串与信息表中的字符串比较
-                // var arr=str2.split(' ');
-                // for(var j=0;j<arr.length;j++)
-                // {
-                //     if(str1.search(arr[j])!=-1){oTab.tBodies[0].rows[i].hidden= false;}
-                // }
-
-
-                // if (oTab.tBodies[0].rows[i].hidden== false||oTab.tBodies[0].rows[i].hidden==""){
-                //     if(stratTime<time&&endTime>time){
-                //         oTab.tBodies[0].rows[i].hidden= false;
-                //     } else {
-                //         oTab.tBodies[0].rows[i].hidden= true;
-                //     }
-                //
-                // }
-
-                //}
-
-                //}
-
-
-            var aria=this.ariaExpanded;
-            var element=document.getElementById("stratTime");
-            $("#closeAndOpen").unbind().on('click',function(){
-                this.innerText="";
-                if (aria==="true"){
-                    this.innerText="展开";
-                    aria = "false";
-                    if (typeof(element)!= "undefined" || element != null){
-                        document.getElementById("btn_addTask").classList.remove("openBtnP");
-                    }
-                } else {
-                    this.innerText="收起";
-                    aria = "true";
-                    if (typeof(element)!= "undefined" || element != null){
-                        document.getElementById("btn_addTask").classList.add("openBtnP");
-                    }
-
+        function globalSearch2(tableID, url, needParam, aCol, statusWord) {
+            $("#btnSearch").unbind().on('click',function() {
+                var newArry = [];
+                var addstr=document.getElementById("chargePersonSearch").value; //搜索里的
+                var str = document.getElementById("taskNameSearch").value.toLowerCase();
+                var allTableData = JSON.parse(localStorage.getItem("2"));
+                if(str.indexOf("请输入")!=-1){
+                    str=""
                 }
+                for (var i in allTableData) {
+                    for (var v in aCol){
+                        var textP = allTableData[i][aCol[v].field];
+                        var isStatusSlot=false;           // 默认状态为true
+                        //状态条件判断,与表格字段的状态一致,这里根据自己写的修改
+                        var status= allTableData[i][statusWord] //表格里的
+                        if(status == "0") status =0;
+                        else if(status == "1" || status == "2") status = 1;
+                        else if(status == "3" || status == "4") status = 2;
+                        else if(status == "5") status = 3;
+                        else if (status == "6") status = 4;
+                        // console.log("addstr:"+addstr)
+                        // console.log("status:"+status)
+                        //调试时可以先打印出来，进行修改
+                        if(addstr==status || addstr == 99){
+                            isStatusSlot=true;
+                        }
+                        if(typeof textP == "object") continue;
+                        else if(typeof textP == "number") textP = textP.toString();
+
+                        if (textP == null || textP == undefined || textP == '') {
+                            textP = "1";
+                        }
+                        if(textP.search(str) != -1 && isStatusSlot){
+                            newArry.push(allTableData[i])
+                        }
+                    }
+                }
+                var newArr=new Set(newArry)
+                newArry=Array.from(newArr)
+                $("#table").bootstrapTable("load", newArry);
+                // if(newArry.length == 0){
+                //     alertUtil.warning("搜索成功,但此搜索条件下没有数据");
+                // }else{
+                //     alertUtil.success("搜索成功");
+                // }
             })
         }
 
@@ -274,6 +204,7 @@
             myBootStrapTableInit:myBootStrapTableInit,
             myBootStrapTableDestory:myBootStrapTableDestory,
             globalSearch:globalSearch,
+            globalSearch2:globalSearch2,
         }
 
 

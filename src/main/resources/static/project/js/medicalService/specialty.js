@@ -52,7 +52,18 @@
                                             return alertUtil.error("文件删除失败");
                                         }
                                     },false,"","get");
-                                    alertUtil.info("删除科室信息成功");
+                                    var submitConfirmModal = {
+                                        modalBodyID: "myTopicSubmitTip",
+                                        modalTitle: "提示",
+                                        modalClass: "modal-lg",
+                                        cancelButtonStyle: "display:none",
+                                        confirmButtonClass: "btn-danger",
+                                        modalConfirmFun: function () {
+                                            return true;
+                                        }
+                                    }
+                                    var submitConfirm = modalUtil.init(submitConfirmModal);
+                                    submitConfirm.show();
                                     isSuccess = true;
                                     refreshTable();
                                 }
@@ -80,9 +91,31 @@
                                 if(ajaxUtil.success(data)){
                                     if(data.code == ajaxUtil.successCode){
                                         if(sessionStorage.getItem("rolename") == "文化宣传处长"){
-                                            alertUtil.info("审核已通过，已发送给综合处处长做最后审核！");
+                                            var submitConfirmModal = {
+                                                modalBodyID: "myTopicSubmitTip",
+                                                modalTitle: "提示",
+                                                modalClass: "modal-lg",
+                                                cancelButtonStyle: "display:none",
+                                                confirmButtonClass: "btn-danger",
+                                                modalConfirmFun: function () {
+                                                    return true;
+                                                }
+                                            }
+                                            var submitConfirm = modalUtil.init(submitConfirmModal);
+                                            submitConfirm.show();
                                         }else{
-                                            alertUtil.info("审核已通过，已上架！");
+                                            var submitConfirmModal = {
+                                                modalBodyID: "myTopicSubmitTip",
+                                                modalTitle: "提示",
+                                                modalClass: "modal-lg",
+                                                cancelButtonStyle: "display:none",
+                                                confirmButtonClass: "btn-danger",
+                                                modalConfirmFun: function () {
+                                                    return true;
+                                                }
+                                            }
+                                            var submitConfirm = modalUtil.init(submitConfirmModal);
+                                            submitConfirm.show();
                                         }
                                         isSuccess = true;
                                         refreshTable();
@@ -119,7 +152,18 @@
                             ajaxUtil.myAjax(null,"/medicalService/specialty/updateStatus",submitStatus,function (data) {
                                 if(ajaxUtil.success(data)){
                                     if(data.code == 88888){
-                                        alertUtil.info("操作成功");
+                                        var submitConfirmModal = {
+                                            modalBodyID: "myTopicSubmitTip",
+                                            modalTitle: "提示",
+                                            modalClass: "modal-lg",
+                                            cancelButtonStyle: "display:none",
+                                            confirmButtonClass: "btn-danger",
+                                            modalConfirmFun: function () {
+                                                return true;
+                                            }
+                                        }
+                                        var submitConfirm = modalUtil.init(submitConfirmModal);
+                                        submitConfirm.show();
                                         isSuccess = true;
                                         refreshTable();
                                     }else{
@@ -150,7 +194,18 @@
                             ajaxUtil.myAjax(null,"/medicalService/specialty/updateStatus",submitStatus,function (data) {
                                 if(ajaxUtil.success(data)){
                                     if(data.code == 88888){
-                                        alertUtil.success("下架成功");
+                                        var submitConfirmModal = {
+                                            modalBodyID: "myTopicSubmitTip",
+                                            modalTitle: "提示",
+                                            modalClass: "modal-lg",
+                                            cancelButtonStyle: "display:none",
+                                            confirmButtonClass: "btn-danger",
+                                            modalConfirmFun: function () {
+                                                return true;
+                                            }
+                                        }
+                                        var submitConfirm = modalUtil.init(submitConfirmModal);
+                                        submitConfirm.show();
                                         isSuccess = true;
                                         refreshTable();
                                     }else{
@@ -176,10 +231,12 @@
                     var myTravelModal = modalUtil.init(myViewTravelModalData);
                     $("#specialtyImg").attr("src",row.filePath)
                     $("#specialtyName").val(row.specialtyName);
+                    $("#specialtyLevel").val(row.specialtyLevel);
                     $("#specialtyBriefIntroduce").val(row.specialtyBriefIntroduce);
                     $("#specialtyPhone").val(row.specialtyPhone);
                     $("#specialtyAddress").val(handlePro(row.specialtyAddressPro) + row.specialtyAddressCity + row.specialtyAddressCounty + row.specialtyAddress);
                     $("#specialtyLink").val(row.specialtyLink);
+                    $("#specialtyDisease").val(row.specialtyDisease);
                     $("#specialtyIntroduce").html(row.specialtyIntroduce)
                     $("#specialtyStatus").val(webStatus[row.specialtyStatus].text);
                     $("#creater").val(row.creater);
@@ -202,7 +259,18 @@
                             ajaxUtil.myAjax(null,"/medicalService/specialty/updateStatus",submitStatus,function (data) {
                                 if(ajaxUtil.success(data)){
                                     if(data.code == 88888){
-                                        alertUtil.info("已提交");
+                                        var submitConfirmModal = {
+                                            modalBodyID: "myTopicSubmitTip",
+                                            modalTitle: "提示",
+                                            modalClass: "modal-lg",
+                                            cancelButtonStyle: "display:none",
+                                            confirmButtonClass: "btn-danger",
+                                            modalConfirmFun: function () {
+                                                return true;
+                                            }
+                                        }
+                                        var submitConfirm = modalUtil.init(submitConfirmModal);
+                                        submitConfirm.show();
                                         isSuccess = true;
                                         refreshTable();
                                     }else{
@@ -234,7 +302,18 @@
                             ajaxUtil.myAjax(null,"/medicalService/specialty/updateStatus",submitStatus,function (data) {
                                 if(ajaxUtil.success(data)){
                                     if(data.code == 88888){
-                                        alertUtil.info("已取消提交");
+                                        var submitConfirmModal = {
+                                            modalBodyID: "myTopicSubmitTip",
+                                            modalTitle: "提示",
+                                            modalClass: "modal-lg",
+                                            cancelButtonStyle: "display:none",
+                                            confirmButtonClass: "btn-danger",
+                                            modalConfirmFun: function () {
+                                                return true;
+                                            }
+                                        }
+                                        var submitConfirm = modalUtil.init(submitConfirmModal);
+                                        submitConfirm.show();
                                         isSuccess = true;
                                         refreshTable();
                                     }else{
@@ -258,23 +337,22 @@
                 orange.redirect(addUrl)
             });
 
-            var pl = dictUtil.getDictByCode(dictUtil.DICT_LIST.showStatus);
-            $("#chargePersonSearch").selectUtil(pl);
+            $("#chargePersonSearch").selectUtil(selectUtil.inSearchStatus());
 
             var aCol = [
                 {field: 'specialtyName', title: '科室名称'},
                 {field: 'hospitalName', title: '所属医院'},
-                {field: 'filePath', title: '图片',formatter:function (value, row, index) {
+                {field: 'filePath', title: '图片',width:'200px',formatter:function (value, row, index) {
                         if(value == "已经损坏了"){
-                            return '<p>'+value+'</p>';
+                            return value;
                         }else{
                             return '<img  src='+value+' width="100" height="100" class="img-rounded" >';
                         }
                     }},
                 {field: 'specialtyAddress', title: '地址',formatter:function (value, row, index) {
-                        return handlePro(row.specialtyAddressPro) + row.specialtyAddressPro + row.specialtyAddressCity + row.specialtyAddressCity + value
+                        return handlePro(row.specialtyAddressPro) + row.specialtyAddressCity + row.specialtyAddressCity + value
                     }},
-                {field: 'specialtyPhone', title: '联系电话', width:'125px'},
+                {field: 'specialtyPhone', title: '联系电话', width:'200px'},
                 {field: 'action',  title: '操作',formatter: operation,events:orgEvents}
             ];
 
@@ -286,7 +364,7 @@
                 myTable = bootstrapTableUtil.myBootStrapTableInit("table", url, param, aCol);
             }
 
-            bootstrapTableUtil.globalSearch("table",url,aParam, aCol);
+            bootstrapTableUtil.globalSearch2("table",url,aParam, aCol,"specialtyStatus");
 
         })
 })();

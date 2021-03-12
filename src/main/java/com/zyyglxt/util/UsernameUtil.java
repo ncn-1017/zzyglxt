@@ -20,16 +20,42 @@ public class UsernameUtil {
 
     public String getOperateUser(){
         UserSessionDto user = (UserSessionDto) request.getSession().getAttribute("user");
-        return user.getUsername();
+        if (user != null){
+            return user.getUsername();
+        }else {
+            return null;
+        }
+    }
+    public String getItemCode(){
+        UserSessionDto user = (UserSessionDto) request.getSession().getAttribute("user");
+        if (user != null){
+            return user.getItemcode();
+        }else {
+            return null;
+        }
     }
     public String getOrgCode(){
         UserSessionDto user = (UserSessionDto) request.getSession().getAttribute("user");
         return user.getOrgCode();
     }
 
+    public String getOrgItemCode(){
+        UserSessionDto user = (UserSessionDto) request.getSession().getAttribute("user");
+        return user.getOrgItemCode();
+    }
+
     public String getRoleName(){
         UserSessionDto user = (UserSessionDto) request.getSession().getAttribute("user");
         return user.getRolename();
+    }
+
+    public String getCityId(){
+        UserSessionDto user = (UserSessionDto) request.getSession().getAttribute("user");
+        if (user != null){
+            return user.getCityId();
+        }else {
+            return null;
+        }
     }
 
 }

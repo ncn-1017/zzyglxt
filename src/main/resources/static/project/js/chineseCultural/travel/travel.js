@@ -44,7 +44,17 @@
                                             return alertUtil.error("文件删除失败，可能已经损坏了");
                                         }
                                     },false,"","get");
-                                    alertUtil.info("删除景点信息成功");
+                                    var submitConfirmModal = {
+                                        modalBodyID :"myTopicSubmitTip",
+                                        modalTitle : "提示",
+                                        modalClass : "modal-lg",
+                                        cancelButtonStyle: "display:none",
+                                        modalConfirmFun:function (){
+                                            return true;
+                                        }
+                                    }
+                                    var submitConfirm = modalUtil.init(submitConfirmModal);
+                                    submitConfirm.show();
                                     isSuccess = true;
                                     refreshTable();
                                 }
@@ -70,11 +80,17 @@
                             ajaxUtil.myAjax(null,"/cul/trav/trav/cgTravSta/"+row.itemid+"/"+row.itemcode,submitStatus,function (data) {
                                 if(ajaxUtil.success(data)){
                                     if(data.code == ajaxUtil.successCode){
-                                        if(sessionStorage.getItem("rolename") == "文化宣传处长"){
-                                            alertUtil.info("审核已通过，已发送给综合处处长做最后审核！");
-                                        }else{
-                                            alertUtil.info("审核已通过，已上架！");
+                                        var submitConfirmModal = {
+                                            modalBodyID :"myTopicSubmitTip",
+                                            modalTitle : "提示",
+                                            modalClass : "modal-lg",
+                                            cancelButtonStyle: "display:none",
+                                            modalConfirmFun:function (){
+                                                return true;
+                                            }
                                         }
+                                        var submitConfirm = modalUtil.init(submitConfirmModal);
+                                        submitConfirm.show();
                                         isSuccess = true;
                                         refreshTable();
                                     }else{
@@ -108,7 +124,17 @@
                             ajaxUtil.myAjax(null,"/cul/trav/trav/cgTravSta/"+row.itemid+"/"+row.itemcode,submitStatus,function (data) {
                                 if(ajaxUtil.success(data)){
                                     if(data.code == 88888){
-                                        alertUtil.info("操作成功");
+                                        var submitConfirmModal = {
+                                            modalBodyID :"myTopicSubmitTip",
+                                            modalTitle : "提示",
+                                            modalClass : "modal-lg",
+                                            cancelButtonStyle: "display:none",
+                                            modalConfirmFun:function (){
+                                                return true;
+                                            }
+                                        }
+                                        var submitConfirm = modalUtil.init(submitConfirmModal);
+                                        submitConfirm.show();
                                         isSuccess = true;
                                         refreshTable();
                                     }else{
@@ -137,7 +163,17 @@
                             ajaxUtil.myAjax(null,"/cul/trav/trav/cgTravSta/"+row.itemid+"/"+row.itemcode,submitStatus,function (data) {
                                 if(ajaxUtil.success(data)){
                                     if(data.code == 88888){
-                                        alertUtil.success("下架成功");
+                                        var submitConfirmModal = {
+                                            modalBodyID :"myTopicSubmitTip",
+                                            modalTitle : "提示",
+                                            modalClass : "modal-lg",
+                                            cancelButtonStyle: "display:none",
+                                            modalConfirmFun:function (){
+                                                return true;
+                                            }
+                                        }
+                                        var submitConfirm = modalUtil.init(submitConfirmModal);
+                                        submitConfirm.show();
                                         isSuccess = true;
                                         refreshTable();
                                     }else{
@@ -169,9 +205,9 @@
                     $("#itemCreateAt").val(row.itemcreateat);
                     $("#chineseCulturalStatus").val(webStatus[row.chineseCulturalStatus].text);
                     $("#culturalImg").attr("src",row.filePath)
-                    $('#culturalImgSpan').html("景点图片");
-                    $('#culturalNameSpan').html("景点名称");
-                    $('#culturalContentSpan').html("景点介绍");
+                    $('#culturalImgSpan').html("景点图片：");
+                    $('#culturalNameSpan').html("景点名称：");
+                    $('#culturalContentSpan').html("景点介绍：");
 
                     myTravelModal.show();
                 },
@@ -189,7 +225,17 @@
                             ajaxUtil.myAjax(null,"/cul/trav/trav/cgTravSta/"+row.itemid+"/"+row.itemcode,submitStatus,function (data) {
                                 if(ajaxUtil.success(data)){
                                     if(data.code == 88888){
-                                        alertUtil.info("已提交");
+                                        var submitConfirmModal = {
+                                            modalBodyID :"myTopicSubmitTip",
+                                            modalTitle : "提示",
+                                            modalClass : "modal-lg",
+                                            cancelButtonStyle: "display:none",
+                                            modalConfirmFun:function (){
+                                                return true;
+                                            }
+                                        }
+                                        var submitConfirm = modalUtil.init(submitConfirmModal);
+                                        submitConfirm.show();
                                         isSuccess = true;
                                         refreshTable();
                                     }else{
@@ -219,7 +265,17 @@
                             ajaxUtil.myAjax(null,"/cul/trav/trav/cgTravSta/"+row.itemid+"/"+row.itemcode,submitStatus,function (data) {
                                 if(ajaxUtil.success(data)){
                                     if(data.code == 88888){
-                                        alertUtil.info("已提交");
+                                        var submitConfirmModal = {
+                                            modalBodyID :"myTopicSubmitTip",
+                                            modalTitle : "提示",
+                                            modalClass : "modal-lg",
+                                            cancelButtonStyle: "display:none",
+                                            modalConfirmFun:function (){
+                                                return true;
+                                            }
+                                        }
+                                        var submitConfirm = modalUtil.init(submitConfirmModal);
+                                        submitConfirm.show();
                                         isSuccess = true;
                                         refreshTable();
                                     }else{
@@ -244,8 +300,7 @@
                 orange.redirect(url);
             });
 
-            var pl = dictUtil.getDictByCode(dictUtil.DICT_LIST.showStatus);
-            $("#chargePersonSearch").selectUtil(pl);
+            $("#chargePersonSearch").selectUtil(selectUtil.inSearchStatus());
 
 
             var aCol = [
@@ -265,6 +320,7 @@
 
             var myTable = bootstrapTableUtil.myBootStrapTableInit("table", url, aParam, aCol);
 
+
             function refreshTable() {
                 var param = {};
                 myTable.free();
@@ -272,7 +328,7 @@
             }
 
 
-            bootstrapTableUtil.globalSearch("table",url,aParam, aCol);
+            bootstrapTableUtil.globalSearch2("table", url, aParam, aCol, "chineseCulturalStatus")
 
         })
 })();

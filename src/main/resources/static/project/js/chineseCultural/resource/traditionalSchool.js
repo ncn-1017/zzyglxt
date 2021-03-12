@@ -41,7 +41,17 @@
                                             return alertUtil.error("文件删除失败");
                                         }
                                     },false,"","get");
-                                    alertUtil.info("删除中医流派信息成功");
+                                    var submitConfirmModal = {
+                                        modalBodyID :"myTopicSubmitTip",
+                                        modalTitle : "提示",
+                                        modalClass : "modal-lg",
+                                        cancelButtonStyle: "display:none",
+                                        modalConfirmFun:function (){
+                                            return true;
+                                        }
+                                    }
+                                    var submitConfirm = modalUtil.init(submitConfirmModal);
+                                    submitConfirm.show();
                                     isSuccess = true;
                                     refreshTable();
                                 }
@@ -67,11 +77,17 @@
                             ajaxUtil.myAjax(null,"/cul/res/traSch/cgTraSchSta/"+row.itemid+"/"+row.itemcode,submitStatus,function (data) {
                                 if(ajaxUtil.success(data)){
                                     if(data.code == 88888){
-                                        if(sessionStorage.getItem("rolename") == "文化宣传处长"){
-                                            alertUtil.info("审核已通过，已发送给综合处处长做最后审核！");
-                                        }else{
-                                            alertUtil.info("审核已通过，已上架！");
+                                        var submitConfirmModal = {
+                                            modalBodyID :"myTopicSubmitTip",
+                                            modalTitle : "提示",
+                                            modalClass : "modal-lg",
+                                            cancelButtonStyle: "display:none",
+                                            modalConfirmFun:function (){
+                                                return true;
+                                            }
                                         }
+                                        var submitConfirm = modalUtil.init(submitConfirmModal);
+                                        submitConfirm.show();
                                         isSuccess = true;
                                         refreshTable();
                                     }else{
@@ -105,7 +121,17 @@
                             ajaxUtil.myAjax(null,"/cul/res/traSch/cgTraSchSta/"+row.itemid+"/"+row.itemcode,submitStatus,function (data) {
                                 if(ajaxUtil.success(data)){
                                     if(data.code == 88888){
-                                        alertUtil.info("操作成功");
+                                        var submitConfirmModal = {
+                                            modalBodyID :"myTopicSubmitTip",
+                                            modalTitle : "提示",
+                                            modalClass : "modal-lg",
+                                            cancelButtonStyle: "display:none",
+                                            modalConfirmFun:function (){
+                                                return true;
+                                            }
+                                        }
+                                        var submitConfirm = modalUtil.init(submitConfirmModal);
+                                        submitConfirm.show();
                                         isSuccess = true;
                                         refreshTable();
                                     }else{
@@ -134,7 +160,17 @@
                             ajaxUtil.myAjax(null,"/cul/res/traSch/cgTraSchSta/"+row.itemid+"/"+row.itemcode,submitStatus,function (data) {
                                 if(ajaxUtil.success(data)){
                                     if(data.code == 88888){
-                                        alertUtil.success("下架成功");
+                                        var submitConfirmModal = {
+                                            modalBodyID :"myTopicSubmitTip",
+                                            modalTitle : "提示",
+                                            modalClass : "modal-lg",
+                                            cancelButtonStyle: "display:none",
+                                            modalConfirmFun:function (){
+                                                return true;
+                                            }
+                                        }
+                                        var submitConfirm = modalUtil.init(submitConfirmModal);
+                                        submitConfirm.show();
                                         isSuccess = true;
                                         refreshTable();
                                     }else{
@@ -166,8 +202,8 @@
                     $("#itemCreateAt").val(row.itemcreateat);
                     $("#chineseCulturalStatus").val(webStatus[row.chineseCulturalStatus].text);
                     $("#imgDiv").attr("style","display:none");
-                    $('#culturalNameSpan').html("流派名称");
-                    $('#culturalContentSpan').html("流派介绍");
+                    $('#culturalNameSpan').html("流派名称：");
+                    $('#culturalContentSpan').html("流派介绍：");
                     $("#fileDiv").attr("style","display:block");
                     $("#upFile").html(row.fileName);
 
@@ -187,7 +223,17 @@
                             ajaxUtil.myAjax(null,"/cul/res/traSch/cgTraSchSta/"+row.itemid+"/"+row.itemcode,submitStatus,function (data) {
                                 if(ajaxUtil.success(data)){
                                     if(data.code == 88888){
-                                        alertUtil.info("已提交");
+                                        var submitConfirmModal = {
+                                            modalBodyID :"myTopicSubmitTip",
+                                            modalTitle : "提示",
+                                            modalClass : "modal-lg",
+                                            cancelButtonStyle: "display:none",
+                                            modalConfirmFun:function (){
+                                                return true;
+                                            }
+                                        }
+                                        var submitConfirm = modalUtil.init(submitConfirmModal);
+                                        submitConfirm.show();
                                         isSuccess = true;
                                         refreshTable();
                                     }else{
@@ -217,7 +263,17 @@
                             ajaxUtil.myAjax(null,"/cul/res/traSch/cgTraSchSta/"+row.itemid+"/"+row.itemcode,submitStatus,function (data) {
                                 if(ajaxUtil.success(data)){
                                     if(data.code == 88888){
-                                        alertUtil.info("已提交");
+                                        var submitConfirmModal = {
+                                            modalBodyID :"myTopicSubmitTip",
+                                            modalTitle : "提示",
+                                            modalClass : "modal-lg",
+                                            cancelButtonStyle: "display:none",
+                                            modalConfirmFun:function (){
+                                                return true;
+                                            }
+                                        }
+                                        var submitConfirm = modalUtil.init(submitConfirmModal);
+                                        submitConfirm.show();
                                         isSuccess = true;
                                         refreshTable();
                                     }else{
@@ -235,8 +291,7 @@
                 },
             };
 
-            var pl = dictUtil.getDictByCode(dictUtil.DICT_LIST.showStatus);
-            $("#chargePersonSearch").selectUtil(pl);
+            $("#chargePersonSearch").selectUtil(selectUtil.inSearchStatus());
 
             $("#btn_addTask").unbind().on('click',function () {
                 var url = "/chineseCultural/resource/insertTraditionalSchool";
@@ -248,8 +303,8 @@
             var aCol = [
                 {field: 'chineseCulturalName', title: '流派名称'},
                 {field: 'filePath', title: '附件', formatter:function (value, row, index) {
-                        if(value == "已经损坏了"){
-                            return '<p>'+value+'</p>';
+                        if(value == null){
+                            return '<p style="padding-top: 15px">无附件</p>';
                         }else{
                             return '<a href="'+value+'">'+row.fileName+'</a>'
                         }
@@ -266,9 +321,8 @@
                 myTable.free();
                 myTable = bootstrapTableUtil.myBootStrapTableInit("table", url, param, aCol);
             }
-            bootstrapTableUtil.globalSearch("table",url,aParam, aCol);
 
-            var allTableData = $("#table").bootstrapTable("getData");
+            bootstrapTableUtil.globalSearch2("table", url, aParam, aCol, "chineseCulturalStatus")
 
         })
 })();

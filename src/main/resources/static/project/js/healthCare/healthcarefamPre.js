@@ -29,7 +29,18 @@
                             var isSuccess = false;
                             ajaxUtil.myAjax(null,"deletehealthcarefampredo/"+row.itemid+"/"+row.itemcode,null,function (data) {
                                 if(ajaxUtil.success(data)){
-                                    alertUtil.info("删除国医话健康成功");
+                                    var submitConfirmModal = {
+                                        modalBodyID :"myTopicSubmitTip",
+                                        modalTitle : "提示",
+                                        modalClass : "modal-lg",
+                                        cancelButtonStyle: "display:none",
+                                        modalConfirmFun:function (){
+                                            return true;
+                                        }
+                                    }
+                                    var submitConfirm = modalUtil.init(submitConfirmModal);
+                                    submitConfirm.show();
+
                                     isSuccess = true;
                                     refreshTable();
                                 }
@@ -55,11 +66,18 @@
                             ajaxUtil.myAjax(null,"changestatustocarefam/"+row.itemid+"/"+row.itemcode,submitStatus,function (data) {
                                 if(ajaxUtil.success(data)){
                                     if(data.code == ajaxUtil.successCode){
-                                        if(sessionStorage.getItem("rolename") == "文化宣传处长"){
-                                            alertUtil.info("审核已通过，已发送给综合处处长做最后审核！");
-                                        }else{
-                                            alertUtil.info("审核已通过，已上架！");
+                                        var submitConfirmModal = {
+                                            modalBodyID :"myTopicSubmitTip",
+                                            modalTitle : "提示",
+                                            modalClass : "modal-lg",
+                                            cancelButtonStyle: "display:none",
+                                            modalConfirmFun:function (){
+                                                return true;
+                                            }
                                         }
+                                        var submitConfirm = modalUtil.init(submitConfirmModal);
+                                        submitConfirm.show();
+
                                         isSuccess = true;
                                         refreshTable();
                                     }else{
@@ -85,14 +103,25 @@
                                 "status": ""
                             };
                             if(sessionStorage.getItem("rolename") == "文化宣传处长" || sessionStorage.getItem("rolename") == "政务资源处长"){
-                                submitStatus.chineseCulturalStatus = webStatus[3].id;
+                                submitStatus.status = webStatus[3].id;
                             }else{
-                                submitStatus.chineseCulturalStatus = webStatus[4].id;
+                                submitStatus.status = webStatus[4].id;
                             }
                             ajaxUtil.myAjax(null,"changestatustocarefam/"+row.itemid+"/"+row.itemcode,submitStatus,function (data) {
                                 if(ajaxUtil.success(data)){
                                     if(data.code == 88888){
-                                        alertUtil.info("操作成功");
+                                        var submitConfirmModal = {
+                                            modalBodyID :"myTopicSubmitTip",
+                                            modalTitle : "提示",
+                                            modalClass : "modal-lg",
+                                            cancelButtonStyle: "display:none",
+                                            modalConfirmFun:function (){
+                                                return true;
+                                            }
+                                        }
+                                        var submitConfirm = modalUtil.init(submitConfirmModal);
+                                        submitConfirm.show();
+
                                         isSuccess = true;
                                         refreshTable();
                                     }else{
@@ -121,7 +150,18 @@
                             ajaxUtil.myAjax(null,"changestatustocarefam/"+row.itemid+"/"+row.itemcode,submitStatus,function (data) {
                                 if(ajaxUtil.success(data)){
                                     if(data.code == 88888){
-                                        alertUtil.success("下架成功");
+                                        var submitConfirmModal = {
+                                            modalBodyID :"myTopicSubmitTip",
+                                            modalTitle : "提示",
+                                            modalClass : "modal-lg",
+                                            cancelButtonStyle: "display:none",
+                                            modalConfirmFun:function (){
+                                                return true;
+                                            }
+                                        }
+                                        var submitConfirm = modalUtil.init(submitConfirmModal);
+                                        submitConfirm.show();
+
                                         isSuccess = true;
                                         refreshTable();
                                     }else{
@@ -141,7 +181,7 @@
                     var myViewCareFamModalData ={
                         modalBodyID : "myViewCareFamModal", //公用的在后面给span加不同的内容就行了，其他模块同理
                         modalTitle : "查看详情",
-                        modalClass : "modal-lg",
+                        modalClass : "modal-xl",
                         confirmButtonStyle: "display:none",
                     };
                     var myCareFamModal = modalUtil.init(myViewCareFamModalData);
@@ -169,7 +209,18 @@
                             ajaxUtil.myAjax(null,"changestatustocarefam/"+row.itemid+"/"+row.itemcode,submitStatus,function (data) {
                                 if(ajaxUtil.success(data)){
                                     if(data.code == 88888){
-                                        alertUtil.info("已提交");
+                                        var submitConfirmModal = {
+                                            modalBodyID :"myTopicSubmitTip",
+                                            modalTitle : "提示",
+                                            modalClass : "modal-lg",
+                                            cancelButtonStyle: "display:none",
+                                            modalConfirmFun:function (){
+                                                return true;
+                                            }
+                                        }
+                                        var submitConfirm = modalUtil.init(submitConfirmModal);
+                                        submitConfirm.show();
+
                                         isSuccess = true;
                                         refreshTable();
                                     }else{
@@ -199,7 +250,18 @@
                             ajaxUtil.myAjax(null,"changestatustocarefam/"+row.itemid+"/"+row.itemcode,submitStatus,function (data) {
                                 if(ajaxUtil.success(data)){
                                     if(data.code == 88888){
-                                        alertUtil.info("已提交");
+                                        var submitConfirmModal = {
+                                            modalBodyID :"myTopicSubmitTip",
+                                            modalTitle : "提示",
+                                            modalClass : "modal-lg",
+                                            cancelButtonStyle: "display:none",
+                                            modalConfirmFun:function (){
+                                                return true;
+                                            }
+                                        }
+                                        var submitConfirm = modalUtil.init(submitConfirmModal);
+                                        submitConfirm.show();
+
                                         isSuccess = true;
                                         refreshTable();
                                     }else{
@@ -223,22 +285,21 @@
                 orange.redirect(url);
             });
 
-            var pl = dictUtil.getDictByCode(dictUtil.DICT_LIST.showStatus);
-            $("#chargePersonSearch").selectUtil(pl);
+            $("#chargePersonSearch").selectUtil(selectUtil.inSearchStatus());
 
             var aCol = [
                 {field: 'name', title: '国医话健康标题'},
                 {field: 'source', title: '来源'},
-                {field: 'author', title: '作者'},
-                {field: 'filePath', title: '附件', formatter:function (value, row, index) {
-                        if(value == "已经损坏了"){
-                            return '<p>'+value+'</p>';
+                {field: 'author', title: '作者',width:'100px'},
+                {field: 'filePath', title: '附件', width:'200px',formatter:function (value, row, index) {
+                        if(value == null){
+                            return '<p style="padding-top: 15px">无附件</p>';
                         }else{
                             return '<a href="'+value+'">'+row.fileName+'</a>'
                         }
                     }},
-                {field:'itemcreateat',title:'发布时间'},
-                {field: 'action',  title: '操作',formatter: operation,events:orgEvents}
+                {field:'itemcreateat',title:'发布时间',width:'260px'},
+                {field: 'action',  title: '操作',width:'200px',formatter: operation,events:orgEvents}
             ];
 
             var myTable = bootstrapTableUtil.myBootStrapTableInit("table", url, aParam, aCol);
@@ -249,16 +310,7 @@
                 myTable = bootstrapTableUtil.myBootStrapTableInit("table", url, param, aCol);
             }
 
-            document.getElementById('closeAndOpen').onclick = function(){
-                var aria=this.ariaExpanded;
-                this.innerText="";
-                if (aria=="true"){
-                    this.innerText="展开";
-                } else {
-                    this.innerText="收起";
-                }
-            }
-            bootstrapTableUtil.globalSearch("table",url,aParam, aCol);7
+            bootstrapTableUtil.globalSearch2("table", url, aParam, aCol, "status")
 
         })
 })();

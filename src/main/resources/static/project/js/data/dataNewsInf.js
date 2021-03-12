@@ -36,7 +36,17 @@
                         var isSuccess = false;
                         ajaxUtil.myAjax(null,"/datado/newsInf/deleteByPrimaryKey/"+row.itemid+"/"+row.itemcode,null,function (data) {
                             if(ajaxUtil.success(data)){
-                                alertUtil.info("删除新闻信息成功");
+                                var submitConfirmModal = {
+                                    modalBodyID :"myTopicSubmitTip",
+                                    modalTitle : "提示",
+                                    modalClass : "modal-lg",
+                                    cancelButtonStyle: "display:none",
+                                    modalConfirmFun:function (){
+                                        return true;
+                                    }
+                                }
+                                var submitConfirm = modalUtil.init(submitConfirmModal);
+                                submitConfirm.show();
                                 isSuccess = true;
                                 refreshTable();
                             }
@@ -75,11 +85,17 @@
                         ajaxUtil.myAjax(null,"/datado/newsInf/changeNewsStatus/"+row.itemid+"/"+row.itemcode,submitStatus,function (data) {
                             if(ajaxUtil.success(data)){
                                 if(data.code == 88888){
-                                    if(sessionStorage.getItem("rolename") == "政务资源处长"){
-                                        alertUtil.info("审核已通过，已发送给综合处处长做最后审核！");
-                                    }else{
-                                        alertUtil.info("审核已通过，已上架！");
+                                    var submitConfirmModal = {
+                                        modalBodyID :"myTopicSubmitTip",
+                                        modalTitle : "提示",
+                                        modalClass : "modal-lg",
+                                        cancelButtonStyle: "display:none",
+                                        modalConfirmFun:function (){
+                                            return true;
+                                        }
                                     }
+                                    var submitConfirm = modalUtil.init(submitConfirmModal);
+                                    submitConfirm.show();
                                     isSuccess = true;
                                     refreshTable();
                                 }else{
@@ -112,7 +128,17 @@
                         ajaxUtil.myAjax(null,"/datado/newsInf/changeNewsStatus/"+row.itemid+"/"+row.itemcode,submitStatus,function (data) {
                             if(ajaxUtil.success(data)){
                                 if(data.code == 88888){
-                                    alertUtil.info("操作成功");
+                                    var submitConfirmModal = {
+                                        modalBodyID :"myTopicSubmitTip",
+                                        modalTitle : "提示",
+                                        modalClass : "modal-lg",
+                                        cancelButtonStyle: "display:none",
+                                        modalConfirmFun:function (){
+                                            return true;
+                                        }
+                                    }
+                                    var submitConfirm = modalUtil.init(submitConfirmModal);
+                                    submitConfirm.show();
                                     isSuccess = true;
                                     refreshTable();
                                 }else{
@@ -141,7 +167,17 @@
                         ajaxUtil.myAjax(null,"/datado/newsInf/changeNewsStatus/"+row.itemid+"/"+row.itemcode,submitStatus,function (data) {
                             if(ajaxUtil.success(data)){
                                 if(data.code == 88888){
-                                    alertUtil.success("下架成功");
+                                    var submitConfirmModal = {
+                                        modalBodyID :"myTopicSubmitTip",
+                                        modalTitle : "提示",
+                                        modalClass : "modal-lg",
+                                        cancelButtonStyle: "display:none",
+                                        modalConfirmFun:function (){
+                                            return true;
+                                        }
+                                    }
+                                    var submitConfirm = modalUtil.init(submitConfirmModal);
+                                    submitConfirm.show();
                                     isSuccess = true;
                                     refreshTable();
                                 }else{
@@ -174,8 +210,8 @@
                 $("#dataStatus").val(webStatus[row.dataStatus].text);
                 $("#dataFileType").val(row.dataFileType);
                 $("#imgDiv").attr("style","display:none");
-                $('#dataTitleSpan').html("新闻标题");
-                $('#dataFileTypeSpan').html("新闻性质");
+                $('#dataTitleSpan').html("新闻标题：");
+                $('#dataFileTypeSpan').html("新闻性质：");
 
                 myNewsInfModal.show();
             },
@@ -191,7 +227,7 @@
                             "dataStatus": ""
                         };
                         if(row.dataFileType=="转载性新闻" || row.dataFileType=="转载性公告"){
-                            submitStatus.dataStatus = webStatus[7].id;
+                            submitStatus.dataStatus = webStatus[2].id;
                         }else{
                             submitStatus = {
                                 "dataStatus": selectUtil.getStatus(sessionStorage.getItem("rolename"),webStatus)
@@ -200,7 +236,17 @@
                         ajaxUtil.myAjax(null,"/datado/newsInf/changeNewsStatus/"+row.itemid+"/"+row.itemcode,submitStatus,function (data) {
                             if(ajaxUtil.success(data)){
                                 if(data.code == 88888){
-                                    alertUtil.info("已提交");
+                                    var submitConfirmModal = {
+                                        modalBodyID :"myTopicSubmitTip",
+                                        modalTitle : "提示",
+                                        modalClass : "modal-lg",
+                                        cancelButtonStyle: "display:none",
+                                        modalConfirmFun:function (){
+                                            return true;
+                                        }
+                                    }
+                                    var submitConfirm = modalUtil.init(submitConfirmModal);
+                                    submitConfirm.show();
                                     isSuccess = true;
                                     refreshTable();
                                 }else{
@@ -230,7 +276,17 @@
                         ajaxUtil.myAjax(null,"/datado/newsInf/changeNewsStatus/"+row.itemid+"/"+row.itemcode,submitStatus,function (data) {
                             if(ajaxUtil.success(data)){
                                 if(data.code == 88888){
-                                    alertUtil.info("已提交");
+                                    var submitConfirmModal = {
+                                        modalBodyID :"myTopicSubmitTip",
+                                        modalTitle : "提示",
+                                        modalClass : "modal-lg",
+                                        cancelButtonStyle: "display:none",
+                                        modalConfirmFun:function (){
+                                            return true;
+                                        }
+                                    }
+                                    var submitConfirm = modalUtil.init(submitConfirmModal);
+                                    submitConfirm.show();
                                     isSuccess = true;
                                     refreshTable();
                                 }else{
@@ -253,8 +309,7 @@
             orange.redirect(addUrl);
         });
 
-        var pl = dictUtil.getDictByCode(dictUtil.DICT_LIST.showStatus);
-        $("#chargePersonSearch").selectUtil(pl);
+        $("#chargePersonSearch").selectUtil(selectUtil.inSearchStatus());
 
 
         var aCol = [
@@ -273,7 +328,7 @@
             myTable = bootstrapTableUtil.myBootStrapTableInit("table", url, param, aCol);
         }
 
-        bootstrapTableUtil.globalSearch("table",url,aParam, aCol);
+        bootstrapTableUtil.globalSearch2("table",url,aParam, aCol, "dataStatus");
 
 
     })

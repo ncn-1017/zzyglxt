@@ -1,10 +1,10 @@
 (function () {
-    require(['jquery','objectUtil','ajaxUtil','alertUtil','stringUtil','dictUtil','fileUtil','uploadImg','urlUtil','distpicker'],
-        function (jquery,objectUtil,ajaxUtil,alertUtil,stringUtil,dictUtil,fileUtil,uploadImg,urlUtil,distpicker) {
+    require(['jquery','objectUtil','ajaxUtil','alertUtil','stringUtil','dictUtil','fileUtil','uploadImg','urlUtil','distpicker','modalUtil'],
+        function (jquery,objectUtil,ajaxUtil,alertUtil,stringUtil,dictUtil,fileUtil,uploadImg,urlUtil,distpicker,modalUtil) {
 
             var url = "/industrialdevelop/chi-med";
             var orgType = "plant"
-            var pathUrl = "/industrialdevelop/medMat/medMat"
+            var pathUrl = "/industrialdevelop/chinesemed/plantation_add"
             var type = isUpdate() ? "put" : "post";
             var itemcode;
             var status = dictUtil.getDictByCode(dictUtil.DICT_LIST.projectStatus);
@@ -29,29 +29,100 @@
                 return param;
             }
 
+            function checkParam(param) {
+                if (stringUtil.isBlank(param.name)){
+                    alertUtil.error("种植园名称不能为空")
+                    return false
+                }
+                if (stringUtil.isBlank(param.plantType)){
+                    alertUtil.error("种植种类不能为空")
+                    return false
+                }
+                if (stringUtil.isBlank(param.areaCoverd)){
+                    alertUtil.error("占地面积不能为空")
+                    return false
+                }
+                if (stringUtil.isBlank(param.contacts)){
+                    alertUtil.error("联系人不能为空")
+                    return false
+                }
+                if (stringUtil.isBlank(param.phone)){
+                    alertUtil.error("联系方式不能为空")
+                    return false
+                }
+                if (stringUtil.isBlank(param.addressPro)){
+                    alertUtil.error("省份不能为空")
+                    return false
+                }
+                if (stringUtil.isBlank(param.addressCity)){
+                    alertUtil.error("地市不能为空")
+                    return false
+                }
+                if (stringUtil.isBlank(param.addressCountry)){
+                    alertUtil.error("县/区不能为空")
+                    return false
+                }
+                if (stringUtil.isBlank(param.address)){
+                    alertUtil.error("详细地址不能为空")
+                    return false
+                }
+                if (stringUtil.isBlank(param.intruduce)){
+                    alertUtil.error("简介不能为空")
+                    return false
+                }
+                return true
+            }
+
 
             function updateData(btnType){
-                var operateMessage;
-                var param = generateParam();
-                if ("save" === btnType){
-                    param.status = status[0].id;
-                    operateMessage = "保存信息成功";
-                }
-                else if ("submit" === btnType){
-                    param.status = status[1].id;
-                    operateMessage = "提交信息成功";
-                }
+                var submitModalData = {
+                    modalBodyID: "mySubmitModal",
+                    modalTitle: "提示",
+                    modalClass: "modal-lg",
+                    modalConfirmFun: function () {
+                        var operateMessage;
+                        var param = generateParam();
+                        if ("save" === btnType){
+                            param.status = status[0].id;
+                        }
+                        else if ("submit" === btnType){
+                            if (!checkParam(param)){
+                                return
+                            }
+                            param.status = status[1].id;
+                        }
 
-                fileUtil.handleFile(isUpdate(), param.itemcode, uploadImg.getFiles()[0]);
+                        fileUtil.handleFile(isUpdate(), param.itemcode, uploadImg.getFiles()[0]);
 
-                ajaxUtil.myAjax(null, url, param, function (data) {
-                    if (ajaxUtil.success(data)) {
-                        alertUtil.info(operateMessage);
-                        orange.redirect(pathUrl);
-                    } else {
-                        alert(data.msg);
+                        ajaxUtil.myAjax(null, url, param, function (data) {
+                            if (ajaxUtil.success(data)) {
+
+                            } else {
+                                alert(data.msg);
+                            }
+                        }, true, "123", type);
+
+                        submitModal.hide()
+                        var submitConfirmModal = {
+                            modalBodyID: "myTopicSubmitTip",
+                            modalTitle: "提示",
+                            modalClass: "modal-lg",
+                            cancelButtonStyle: "display:none",
+                            confirmButtonClass: "btn-danger",
+                            modalConfirmFun: function () {
+                                submitConfirm.hide()
+                                orange.redirect(pathUrl);
+                                return true;
+                            }
+                        }
+                        var submitConfirm = modalUtil.init(submitConfirmModal)
+                        submitConfirm.show()
+
                     }
-                }, true, "123", type);
+                }
+                var submitModal = modalUtil.init(submitModalData)
+                submitModal.show()
+                return false;
             }
 
             $("#saveBtn").unbind('click').on('click',function () {
@@ -93,6 +164,7 @@
                         province: "河北省",
                     });//新增页面使用
                 }
+                $("input").attr("required","required")
                 init = function () {
                 }
             };

@@ -3,6 +3,8 @@ package com.zyyglxt.service.impl;
 import com.zyyglxt.dao.DataDOMapper;
 import com.zyyglxt.dataobject.DataDO;
 import com.zyyglxt.dataobject.DataDOKey;
+import com.zyyglxt.dto.DataDto;
+import com.zyyglxt.dto.MainPageDto;
 import com.zyyglxt.error.BusinessException;
 import com.zyyglxt.error.EmBusinessError;
 import com.zyyglxt.service.IDataAnnouncementService;
@@ -12,12 +14,15 @@ import com.zyyglxt.util.UUIDUtils;
 import com.zyyglxt.util.UsernameUtil;
 import com.zyyglxt.validator.ValidatorImpl;
 import com.zyyglxt.validator.ValidatorResult;
+import org.apache.commons.lang3.ObjectUtils;
+import org.ehcache.Cache;
+import org.ehcache.CacheManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
-import java.sql.Date;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -27,6 +32,7 @@ import java.util.List;
  */
 
 @Service
+@SuppressWarnings("unchecked")
 public class DataAnnouncementServiceImpl implements IDataAnnouncementService {
     @Resource
     DataDOMapper dataDOMapper;
@@ -37,22 +43,25 @@ public class DataAnnouncementServiceImpl implements IDataAnnouncementService {
     @Autowired
     private UsernameUtil usernameUtil;
 
+    @Resource
+    private CacheManager cacheManager;
+
     @Override
-    public DataDO selectAnnouncement(DataDOKey key) {
-        return dataDOMapper.selectByPrimaryKey(key,"通知公告");
+    public DataDto selectAnnouncement(DataDOKey key) {
+        return dataDOMapper.selectOneData(key,"通知公告");
     }
 
     @Override
-    public List<DataDO> selectAnnouncementList(List<String> dataStatus) {
-        List<DataDO> dataDOList = new ArrayList<>();
-        for (String status : dataStatus) {
-            dataDOList.addAll(dataDOMapper.selectByAllData("通知公告", status));
-        }
-        return dataDOList;
+    public List<DataDto> selectAnnouncementList(String dataStatus) {
+        return dataDOMapper.selectByAllData("通知公告", dataStatus);
     }
+
+
 
     @Override
     public int insertAnnouncement(DataDO record) {
+        record.setDataDelayedRelease(new Date());
+
         ValidatorResult result = validator.validate(record);
         if(result.isHasErrors()){
             throw new BusinessException(result.getErrMsg(), EmBusinessError.PARAMETER_VALIDATION_ERROR);
@@ -74,6 +83,8 @@ public class DataAnnouncementServiceImpl implements IDataAnnouncementService {
 
     @Override
     public int updateAnnouncement(DataDO record) {
+        record.setDataDelayedRelease(new Date());
+
         ValidatorResult result = validator.validate(record);
         if(result.isHasErrors()){
             throw new BusinessException(result.getErrMsg(), EmBusinessError.PARAMETER_VALIDATION_ERROR);
@@ -87,6 +98,23 @@ public class DataAnnouncementServiceImpl implements IDataAnnouncementService {
     @Override
     public int changeStatus(DataDOKey key, String dataDelayedRelease, String dataStatus) {
         return dataDOMapper.changeStatusByPrimaryKey(key, dataDelayedRelease, dataStatus);
+    }
+
+    @Override
+    public List<MainPageDto> selectForMainPage() {
+        //获得缓存
+        Cache<Object, Object> mainPageTzgg = cacheManager.getCache("mainPageData", Object.class, Object.class);
+        Object tzggData = mainPageTzgg.get("TzggData");
+        //缓存判空
+        if(ObjectUtils.allNotNull(tzggData)){
+            //如果不是空，则直接将缓存数据给前台
+            return (List<MainPageDto>) tzggData;
+        }else {
+            //如果是空，则查询数据库，将数据重新放入本地缓存中
+            List<MainPageDto> tzgg = dataDOMapper.selectAllForMainPage("通知公告");
+            mainPageTzgg.put("TzggData",tzgg);
+            return tzgg;
+        }
     }
 
 }

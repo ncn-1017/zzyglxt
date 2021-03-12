@@ -1,7 +1,7 @@
 (function() {
 	'use strict';
 	
-	define('orange', ['jquery','ajaxUtil','urlUtil','bootstrapBundle'], function($,ajaxUtil,urlUtil) {
+	define('orange', ['jquery','ajaxUtil','urlUtil','modalUtil','bootstrapBundle'], function($,ajaxUtil,urlUtil,modalUtil) {
 		// $('#systemMasking').modal({backdrop: "static"});
 
 
@@ -21,16 +21,6 @@
 		
 
 		function _bindAppContext(getAppContextServiceUrl, _renderIndex) {
-			ajaxUtil.myAjax(null,getAppContextServiceUrl,null,function (data) {
-				if(ajaxUtil.success(data)){
-					if(ajaxUtil.success(data)){
-						_appContext.user = data.data.user;
-						_appContext.organization = data.data.organization;
-						_appContext.role = data.data.role;
-						$("#userName").html(_appContext.user.userName);
-					}
-				}
-			},false);
 			if(_renderIndex != undefined){
 				_renderIndex();
 			}
@@ -60,7 +50,10 @@
 			sessionStorage.clear();	//	清空会话缓存
 			clearAppContext();	//	重置应用上下文
 		}
-		
+
+        function isContains(str, substr) {
+            return new RegExp(substr).test(str);
+        }
 
 		
 		//	渲染应用首页
@@ -104,6 +97,7 @@
 						target.empty();
 					}
 					$.ajax({
+						async: true,
 						url: 'system/getPage.service?path=' + url,
 						type: type,
 						data: data,
@@ -143,14 +137,29 @@
 		});
 
 		// 页面跳转
-		function redirect(url) {
+		function redirect(url, jump = false) {
 			$("#main_body").html("");
-			loadPage({url: url, target: 'main_body', selector: '#fir_body', success: function(data){
+			loadPage({url: url, target: 'main_body', selector: '#fir_body', replace: true, success: function(data){
 					if(data == null||data == ""){
 						return alert(url+"加载失败");
 					}
 					$("#main_body").html(data);
-				}})
+					$('.modal-backdrop').remove();
+					if(jump){
+						var elementsByClassName = document.getElementsByClassName("card");
+						elementsByClassName[0].children[0].classList.remove("active")
+						for(var i = 0; i < elementsByClassName.length; i++){
+							var child = elementsByClassName[i].children[1].children[0].children;
+							for(var j = 0; j<child.length; j+=2){
+								if(child[j].attributes["url"].value == url) {
+									elementsByClassName[i].children[1].classList.add("show")
+									child[j].classList.add("active")
+									break;
+								}
+							}
+						}
+					}
+			}})
 		}
 
 

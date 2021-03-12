@@ -160,6 +160,7 @@
                             ajaxUtil.myAjax(null, viewUrl,null, function (res) {
                                 data = res.data;
                                 modalData.modalBodyID = "myViewPlantModal";
+                                modalData.modalClass= "modal-xl",
                                 myTravelModal = modalUtil.init(modalData);
                                 $("#myImg").attr('src', data.filePath);
                                 $("#name").val(data.name);
@@ -244,6 +245,7 @@
                             ajaxUtil.myAjax(null, viewUrl,null, function (res) {
                                 data = res.data;
                                 modalData.modalBodyID = "myViewSchoolModal";
+                                modalData.modalClass= "modal-xl",
                                 myTravelModal = modalUtil.init(modalData);
                                 $("#myImg").attr('src', data.filePath);
                                 $("#schoolName").val(data.schoolName);
@@ -287,16 +289,41 @@
                     }
                 },
                 'click .pass': function (e, value, row, index) {
-                    var param = {
-                        itemid: row.itemid,
-                        itemcode: row.itemcode,
-                        type: dictUtil.getCode(dictUtil.DICT_LIST.orgType, row.type),
-                        status: pass
-                    };
-                    ajaxUtil.myAjax(null,auditUrl,param,function (data) {
-                        alertUtil.info("修改成功");
-                        refreshTable()
-                    }, true,true,"put")
+                    var passModalData = {
+                        modalBodyID :"myPassModal",
+                        modalTitle : "提示",
+                        modalClass : "modal-lg",
+                        modalConfirmFun: function () {
+                            var param = {
+                                itemid: row.itemid,
+                                itemcode: row.itemcode,
+                                type: dictUtil.getCode(dictUtil.DICT_LIST.orgType, row.type),
+                                status: pass,
+                                orgCode: row.orgCode
+                            };
+                            ajaxUtil.myAjax(null,auditUrl,param,function (data) {
+                                alertUtil.info("修改成功");
+                                passModal.hide();
+                            }, true,true,"put")
+
+                            var submitConfirmModal = {
+                                modalBodyID :"myTopicSubmitTip",
+                                modalTitle : "提示",
+                                modalClass : "modal-lg",
+                                cancelButtonStyle: "display:none",
+                                confirmButtonStyle: "btn-danger",
+                                modalConfirmFun:function (){
+                                    refreshTable()
+                                    return true;
+                                }
+                            }
+                            var submitConfirm = modalUtil.init(submitConfirmModal)
+                            submitConfirm.show()
+                        }
+                    }
+
+                    var passModal = modalUtil.init(passModalData)
+                    passModal.show();
                 },
                 'click .nopass' : function(e, value, row, index) {
                     var param = {
@@ -308,7 +335,7 @@
                     };
 
                     var myModalData ={
-                        modalBodyID : "myInputReason", //公用的在后面给span加不同的内容就行了，其他模块同理
+                        modalBodyID : "myResonable", //公用的在后面给span加不同的内容就行了，其他模块同理
                         modalTitle : "输入理由",
                         modalClass : "modal-lg",
                         modalConfirmFun:function () {
@@ -348,10 +375,25 @@
                 bootstrapTableUtil.myBootStrapTableInit("table", url, param, aCol);
             });
 
-            var pl = dictUtil.getDictByCode(dictUtil.DICT_LIST.showStatus);
-            $("#chargePersonSearch").selectUtil(pl);
-            pl = dictUtil.getDictByCode(dictUtil.DICT_LIST.orgType);
-            $("#orgTypeSelect").selectUtil(pl);
+            var pl;
+            if (rolename == "产业发展-市级"){
+                pl = dictUtil.getDictByCode(dictUtil.DICT_LIST.orgAuditStatus);
+                $("#chargePersonSearch").selectUtil(pl);
+                pl = dictUtil.getDictByCode(dictUtil.DICT_LIST.orgType);
+                $("#orgTypeSelect").selectUtil(pl,false,true);
+            }else if (rolename == "产业发展-省级"){
+                pl = dictUtil.getDictByCode(dictUtil.DICT_LIST.orgAuditStatus);
+                let tpl = [];
+                $.each(pl,function (index, item) {
+                    tpl.push(item)
+                })
+                tpl.splice(0,1)
+                tpl.splice(2,1)
+                $("#chargePersonSearch").selectUtil(tpl);
+                pl = dictUtil.getDictByCode(dictUtil.DICT_LIST.orgType);
+                $("#orgTypeSelect").selectUtil(pl);
+            }
+
 
             //增加全部选项
             var option = $("<option />");
@@ -365,10 +407,10 @@
                 let code = $("#orgTypeSelect").val();
                 if (code != "all"){
                     getUrl = url + "/" + code;
-                    refreshTable();
+                    refreshTable()
                 }else {
                     getUrl = url;
-                    refreshTable();
+                    refreshTable()
                 }
             });
 
@@ -397,6 +439,64 @@
                 myTable = bootstrapTableUtil.myBootStrapTableInit("table", getUrl, param, aCol);
             }
 
-            bootstrapTableUtil.globalSearch("table",getUrl,aParam, aCol);
+            // bootstrapTableUtil.globalSearch("table",getUrl,aParam, aCol,"status");
+            $("#btnSearch").unbind().on('click',function() {
+                var newArry = [];
+                var addstr=document.getElementById("chargePersonSearch").value;
+                switch (addstr) {
+                    case "0" : addstr = rolename == "产业发展-市级" ? "待审核": "地市局用户审核通过"; break;
+                    case "1" : addstr = "地市局用户审核通过"; break;
+                    case "2" : addstr = "地市局用户审核不通过"; break;
+                    case "3" : addstr = "省局用户审核通过"; break;
+                    case "4" : addstr = "省局用户审核不通过"; break;
+                }
+                var str = document.getElementById("taskNameSearch").value.toLowerCase();
+                var allTableData = JSON.parse(localStorage.getItem("2"));
+                if(str.indexOf("请输入")!=-1){
+                    str=""
+                }
+                for (var i in allTableData) {
+                    for (var v in aCol){
+                        var textP = allTableData[i][aCol[v].field];
+                        var isStatusSlot=false;           // 默认状态为true
+                        //状态条件判断,与表格字段的状态一致,这里根据自己写的修改
+                        var status= allTableData[i]["status"]
+                        // console.log("addstr:"+addstr)
+                        // console.log("status:"+status)
+
+                        //调试时可以先打印出来，进行修改
+                        if(addstr==status){
+                            isStatusSlot=true;
+                        }
+                        //当存在时将条件改为flase
+                        if (textP == null || textP == undefined || textP == '') {
+                            textP = "1";
+                        }
+                        if(textP.search(str) != -1){
+                            isStatusSlot = false;
+                            newArry.push(allTableData[i])
+                        }
+                        if(textP.search(str) != -1 && isStatusSlot){
+                            newArry.push(allTableData[i])
+                        }
+                    }
+                }
+                var newArr=new Set(newArry)
+                newArry=Array.from(newArr)
+                $("#table").bootstrapTable("load", newArry);
+
+            })
+
+            var aria=this.ariaExpanded;
+            $("#closeAndOpen").unbind().on('click',function(){
+                this.innerText="";
+                if (aria==="true"){
+                    this.innerText="展开";
+                    aria = "false";
+                } else {
+                    this.innerText="收起";
+                    aria = "true";
+                }
+            })
         })
 })();

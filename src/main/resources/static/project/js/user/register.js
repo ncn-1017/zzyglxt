@@ -38,7 +38,7 @@
                 ctx.fillStyle = randomColor(180, 240); //颜色若太深可能导致看不清
                 ctx.fillRect(0, 0, width, height);
                 /**绘制文字**/
-                var str = 'ABCEFGHJKLMNPQRSTWXY123456789';
+                var str = 'abcdefghijklmnopqrstuvwxyz0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ';
                 for (var i = 0; i < 4; i++) {
                     var txt = str[randomNum(0, str.length)];
                     codeStr[i] = txt;
@@ -55,7 +55,33 @@
                     ctx.rotate(-deg * Math.PI / 180);
                     ctx.translate(-x, -y);
                 }
+                //绘制干扰线
+                for (var i = 0; i < 5; i++) {
+                    ctx.beginPath();
+                    ctx.strokeStyle = randomColor(50, 160);
+                    ctx.moveTo(randomNum(0,30),randomNum(0,40));
+                    ctx.lineTo(randomNum(90,110),randomNum(0,40));
+                    ctx.stroke();
+                }
+
             }
+
+            $("#username").on("blur", function () {
+                let username = $("#username").val();
+                var reg = /^[a-zA-Z]([\s\S]{4,11})$/;//以字母开头，5-12位，([\s\S]*)匹配任意字符
+                if (!reg.test(username)) {
+                    alertUtil.error("用户名须以字母开头，长度为5-12位");
+                    return false
+                }
+            });
+
+            $("#checkpassword").on("blur", function () {
+                let password = $("#password").val();
+                let checkpwd = $("#checkpassword").val();
+                if (checkpwd != password){
+                    alertUtil.info("两次输入的密码不一致")
+                }
+            });
 
             // 机构审核状态
             $("#orgCode").on("blur", function () {
@@ -65,7 +91,7 @@
                 let orgType = dictUtil.getName(dictUtil.DICT_LIST.orgType, $("#orgType").val());
                 let orgCode = $("#orgCode").val();
                 var userEntity = {"orgName": orgName, "orgIdentify": orgType, "orgCode": orgCode};
-                if (!stringUtil.isBlank(orgCode)){
+                if (!stringUtil.isBlank(orgCode) && !stringUtil.isBlank(orgName)){
                     $.ajax({
                         url:"/user/queryOrgStatus",
                         type:'POST',
@@ -155,7 +181,7 @@
                         }
                     });
                 } else {
-                    alertUtil.info("请输入统一社会信用代码！")
+                    alertUtil.info("请输入企业名称或统一社会信用代码！")
                 }
 
             });
@@ -166,41 +192,49 @@
                 let orgCode = $("#orgCode").val();
                 let username = $("#username").val();
                 let password = $("#password").val();
+                let checkpwd = $("#checkpassword").val();
                 let phone = $("#phone").val();
-
                 let inputCode = $("#reg-code").val().toLowerCase();
                 let canvasCode = codeStr.join("").toLowerCase();
 
-                if (orgName == '') {
+                if (stringUtil.isBlank(orgName)) {
                     alertUtil.error('请输入机构名字！');
                     return false;
                 }
-                if (orgType == '') {
+                if (stringUtil.isBlank(orgType)) {
                     alertUtil.error('请选择机构类型！');
                     return false;
                 }
-                if (orgCode == '') {
-                    alertUtil.error('请输入机构代码！');
+                if (stringUtil.isBlank(orgCode)) {
+                    alertUtil.error('请输入统一社会信用代码！');
                     return false;
                 }
-                if (username == '') {
+                if (stringUtil.isBlank(username)) {
                     alertUtil.error('请输入用户名！');
                     return false;
                 }
-                if (password == '') {
+                var reg = /^[a-zA-Z]([\s\S]{4,11})$/;//以字母开头，5-12位，([\s\S]*)匹配任意字符
+                if (!reg.test(username)) {
+                    alertUtil.error("用户名须以字母开头，长度为5-12位");
+                    return false
+                }
+                if (stringUtil.isBlank(password)) {
                     alertUtil.error('请输入密码！');
                     return false;
                 }
-                if (phone == '') {
-                    alertUtil.error('请输入手机号码！');
-                    return false;
-                } else if (!(/^1[3456789]\d{9}$/.test(phone))) {
-                    alertUtil.error("手机号码有误，请重填");
+                if (stringUtil.isBlank(checkpwd)) {
+                    alertUtil.error('请确认密码！');
                     return false;
                 }
-
-
-                if (inputCode == '') {
+                if (password != checkpwd){
+                    alertUtil.info("两次输入的密码不一致");
+                    return false
+                }
+                if (stringUtil.isBlank(phone)) {
+                    alertUtil.error('请输入电话号码或手机号码！');
+                    return false;
+                }
+                if (stringUtil.isBlank(inputCode)) {
                     alertUtil.error('请输入验证码！');
                     return false;
                 } else if (inputCode == canvasCode) {
@@ -209,7 +243,7 @@
                     alertUtil.error('验证码错误！请重新输入！');
                     return false
                 }
-            }
+            };
 
             $("#btn_register").unbind("click").bind("click", function () {
                 let orgName = $("#orgName").val();
@@ -241,6 +275,10 @@
                         }
                     }, false)
                 }
+            });
+
+            $("#btn_login").unbind("click").bind("click",function () {
+                window.location.href = "/userLogin"
             })
 
             // 判断str中是否含有substr

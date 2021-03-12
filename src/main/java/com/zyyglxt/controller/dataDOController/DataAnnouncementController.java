@@ -35,14 +35,32 @@ public class DataAnnouncementController {
     private IFileService fileService;
 
     /**
+     * 查看一个通知公告
+     * @return
+     */
+    @RequestMapping(value = "/selectOne/{itemID}/{itemCode}", method = RequestMethod.GET)
+    @LogAnnotation(appCode ="",logTitle ="查看一个通知公告",logLevel ="1",creater ="",updater = "")
+    public ResponseData selectOneAnnouncementList(@PathVariable Integer itemID, @PathVariable String itemCode){
+        DataDOKey dataDOKey = new DataDOKey();
+        dataDOKey.setItemid(itemID);
+        dataDOKey.setItemcode(itemCode);
+        return new ResponseData(EmBusinessError.success,dataAnnouncementService.selectAnnouncement(dataDOKey));
+    }
+
+    /**
      * 查看通知公告的所有数据
      * @return
      */
     @RequestMapping(value = "/selectAll", method = RequestMethod.GET)
     @LogAnnotation(appCode ="",logTitle ="查看所有通知公告",logLevel ="1",creater ="",updater = "")
-    public ResponseData selectAnnouncementList(@RequestParam(value = "dataStatus")List dataStatus){
-        List<DataDO> dataDOList = dataAnnouncementService.selectAnnouncementList(dataStatus);
-        return new ResponseData(EmBusinessError.success,DoToDto(dataDOList));
+    public ResponseData selectAnnouncementList(@RequestParam(value = "dataStatus")String dataStatus){
+        return new ResponseData(EmBusinessError.success,dataAnnouncementService.selectAnnouncementList(dataStatus));
+    }
+
+    @RequestMapping(value = "/selectAnnMain", method = RequestMethod.GET)
+    @LogAnnotation(appCode ="",logTitle ="查看所有通知公告",logLevel ="1",creater ="",updater = "")
+    public ResponseData selectAnnouncementForMainPage(){
+        return new ResponseData(EmBusinessError.success,dataAnnouncementService.selectForMainPage());
     }
 
     /**
@@ -88,7 +106,7 @@ public class DataAnnouncementController {
     @RequestMapping(value = "changeAnnStatus/{itemID}/{itemCode}", method = RequestMethod.PUT)
     @ResponseBody
     @LogAnnotation(appCode ="",logTitle ="修改展示状态",logLevel ="2",creater ="",updater = "")
-    public ResponseData changeStatus(@RequestParam("dataDelayedRelease") String dataDelayedRelease, @RequestParam("dataStatus") String dataStatus, @PathVariable("itemID") Integer itemID, @PathVariable("itemCode")String itemCode){
+    public ResponseData changeStatus(@RequestParam(value = "dataDelayedRelease",required = false) String dataDelayedRelease, @RequestParam("dataStatus") String dataStatus, @PathVariable("itemID") Integer itemID, @PathVariable("itemCode")String itemCode){
         DataDOKey dataDOKey = new DataDOKey();
         dataDOKey.setItemid(itemID);
         dataDOKey.setItemcode(itemCode);

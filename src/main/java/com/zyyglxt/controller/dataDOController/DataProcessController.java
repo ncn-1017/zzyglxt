@@ -41,9 +41,8 @@ public class DataProcessController {
      */
     @RequestMapping(value = "/selectAll", method = RequestMethod.GET)
     @LogAnnotation(appCode ="",logTitle ="查看所有办事流程数据",logLevel ="1",creater ="",updater = "")
-    public ResponseData selectProcessList(@RequestParam(value = "dataStatus")List dataStatus){
-        List<DataDO> dataDOList = dataProcessService.selectProcessList(dataStatus);
-        return new ResponseData(EmBusinessError.success,DoToDto(dataDOList));
+    public ResponseData selectProcessList(@RequestParam(value = "dataStatus")String dataStatus){
+        return new ResponseData(EmBusinessError.success,dataProcessService.selectProcessList(dataStatus));
     }
 
     /**
@@ -89,7 +88,7 @@ public class DataProcessController {
     @RequestMapping(value = "changeProcessStatus/{itemID}/{itemCode}", method = RequestMethod.PUT)
     @ResponseBody
     @LogAnnotation(appCode ="",logTitle ="修改展示状态",logLevel ="2",creater ="",updater = "")
-    public ResponseData changeStatus(@RequestParam("dataDelayedRelease") String dataDelayedRelease, @RequestParam("dataStatus") String dataStatus, @PathVariable("itemID") Integer itemID, @PathVariable("itemCode")String itemCode){
+    public ResponseData changeStatus(@RequestParam(value = "dataDelayedRelease",required = false) String dataDelayedRelease, @RequestParam("dataStatus") String dataStatus, @PathVariable("itemID") Integer itemID, @PathVariable("itemCode")String itemCode){
         DataDOKey dataDOKey = new DataDOKey();
         dataDOKey.setItemid(itemID);
         dataDOKey.setItemcode(itemCode);

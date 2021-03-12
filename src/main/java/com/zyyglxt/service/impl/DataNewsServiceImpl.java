@@ -3,6 +3,7 @@ package com.zyyglxt.service.impl;
 import com.zyyglxt.dao.DataDOMapper;
 import com.zyyglxt.dataobject.DataDO;
 import com.zyyglxt.dataobject.DataDOKey;
+import com.zyyglxt.dto.DataDto;
 import com.zyyglxt.error.BusinessException;
 import com.zyyglxt.error.EmBusinessError;
 import com.zyyglxt.service.IDataNewsService;
@@ -16,8 +17,8 @@ import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 
-import java.sql.Date;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -43,21 +44,13 @@ public class DataNewsServiceImpl implements IDataNewsService {
     }
 
     @Override
-    public List<DataDO> selectNewsInfList(List<String> dataStatus) {
-        List<DataDO> dataDOList = new ArrayList<>();
-        for (String status : dataStatus) {
-            dataDOList.addAll(dataDOMapper.selectByAllData("新闻", status));
-        }
-        return dataDOList;
+    public List<DataDto> selectNewsInfList(String dataStatus) {
+        return dataDOMapper.selectByAllData("新闻", dataStatus);
     }
 
     @Override
-    public List<DataDO> selectNewsRotList(List<String> dataStatus) {
-        List<DataDO> dataDOList = new ArrayList<>();
-        for (String status : dataStatus) {
-            dataDOList.addAll(dataDOMapper.getAllNewsRot("新闻", status));
-        }
-        return dataDOList;
+    public List<DataDto> selectNewsRotList(String dataStatus) {
+        return dataDOMapper.getAllNewsRot("新闻", dataStatus);
     }
 
     @Override

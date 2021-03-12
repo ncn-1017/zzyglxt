@@ -31,7 +31,9 @@ public interface UserService {
 
     int updateByPrimaryKey(UserDO record);
 
-    List<UserDO> selectAllUser();
+    List<UserDO> selectAllUser(String itemcode, String username);
+
+    List<UserDO> selectAllUser3(String itemcode, String username);
 
     int deleteByUsername(String username);
 

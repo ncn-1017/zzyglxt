@@ -11,6 +11,8 @@ public interface OrganizationDOMapper {
 
     int deleteByPrimaryKey(Integer itemid);
 
+    int deleteByNameAndCode(@Param("orgName") String orgName, @Param("orgCode") String orgCode);
+
     int insert(OrganizationDO record);
 
     int insertSelective(OrganizationDO record);
@@ -21,7 +23,7 @@ public interface OrganizationDOMapper {
 
     List<OrganizationDO> queryAllOrgByAuditStatus();
 
-    OrganizationDO selectByOrgNameAndCode(String orgName, String orgCode);
+    OrganizationDO selectByOrgNameAndCode(@Param("orgName") String orgName, @Param("orgCode")String orgCode);
 
     OrganizationDO selectByOrgName(String orgName);
 
@@ -31,5 +33,5 @@ public interface OrganizationDOMapper {
 
     int updateByPrimaryKey(OrganizationDO record);
 
-    String selectByItemCode(String itemCode);
+    OrganizationDO selectByItemCode(String itemCode);
 }

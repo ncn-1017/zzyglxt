@@ -1,6 +1,6 @@
 (function () {
-    require(['jquery','ajaxUtil','stringUtil','uploadImg','objectUtil',"distpicker",'urlUtil'],
-        function ($,ajaxUtil,stringUtil,uploadImg, objectUtil,distpicker,urlUtil) {
+    require(['jquery','ajaxUtil','stringUtil','uploadImg','objectUtil',"distpicker",'urlUtil','modalUtil','alertUtil'],
+        function ($,ajaxUtil,stringUtil,uploadImg, objectUtil,distpicker,urlUtil,modalUtil,alertUtil) {
 
             var url = "/industrialdevelop/chi-med";
 
@@ -32,10 +32,53 @@
                 param.addressCountry = $("#addressCountry").val()
                 param.address = $("#address").val()
                 param.intruduce = $(".w-e-text").html();
-                param.orgCode = sessionStorage.getItem("orgCode");
                 param.type = orgType;
                 param.itemcode = itemcode;
                 return param;
+            }
+
+            function checkParam(param) {
+                if (stringUtil.isBlank(param.name)){
+                    alertUtil.error("企业名称不能为空")
+                    return false
+                }
+                if (stringUtil.isBlank(param.peoduceType)){
+                    alertUtil.error("生产类型不能为空")
+                    return false
+                }
+                if (stringUtil.isBlank(param.peoduceDrug)){
+                    alertUtil.error("生产药品不能为空")
+                    return false
+                }
+                if (stringUtil.isBlank(param.contacts)){
+                    alertUtil.error("联系人不能为空")
+                    return false
+                }
+                if (stringUtil.isBlank(param.phone)){
+                    alertUtil.error("联系方式不能为空")
+                    return false
+                }
+                if (stringUtil.isBlank(param.addressPro)){
+                    alertUtil.error("省份不能为空")
+                    return false
+                }
+                if (stringUtil.isBlank(param.addressCity)){
+                    alertUtil.error("地市不能为空")
+                    return false
+                }
+                if (stringUtil.isBlank(param.addressCountry)){
+                    alertUtil.error("县/区不能为空")
+                    return false
+                }
+                if (stringUtil.isBlank(param.address)){
+                    alertUtil.error("详细地址不能为空")
+                    return false
+                }
+                if (stringUtil.isBlank(param.intruduce)){
+                    alertUtil.error("简介不能为空")
+                    return false
+                }
+                return true
             }
 
             $("#saveBtn").unbind('click').on('click',function () {
@@ -56,18 +99,48 @@
             });
 
             $("#submitBtn").unbind('click').on('click',function () {
-                var param = generateParam();
-                param.status = "1";
-                if (uploadImg.isUpdate()){
-                    ajaxUtil.fileAjax(itemcode,uploadImg.getFiles()[0],sessionStorage.getItem("username"), sessionStorage.getItem("itemcode"))
-                }
-                ajaxUtil.myAjax(null,url,param,function (data) {
-                    if(ajaxUtil.success(data)){
-                        orange.redirect(pathUrl)
-                    }else {
-                        alert(data.msg)
+                var submitModalData = {
+                    modalBodyID: "mySubmitModal",
+                    modalTitle: "提示",
+                    modalClass: "modal-lg",
+                    modalConfirmFun: function () {
+                        var param = generateParam();
+                        param.status = "1";
+                        if (!checkParam(param)){
+                            return
+                        }
+                        if (uploadImg.isUpdate()){
+                            ajaxUtil.fileAjax(itemcode,uploadImg.getFiles()[0],sessionStorage.getItem("username"), sessionStorage.getItem("itemcode"))
+                        }
+                        ajaxUtil.myAjax(null,url,param,function (data) {
+                            if(ajaxUtil.success(data)){
+                                orange.redirect(pathUrl)
+                            }else {
+                                alert(data.msg)
+                            }
+                        },true,"123",type);
+
+                        submitModal.hide()
+                        var submitConfirmModal = {
+                            modalBodyID: "myTopicSubmitTip",
+                            modalTitle: "提示",
+                            modalClass: "modal-lg",
+                            cancelButtonStyle: "display:none",
+                            confirmButtonClass: "btn-danger",
+                            modalConfirmFun: function () {
+                                submitConfirm.hide()
+                                return true;
+                            }
+                        }
+                        var submitConfirm = modalUtil.init(submitConfirmModal)
+                        submitConfirm.show()
+
                     }
-                },true,"123",type);
+                }
+                var submitModal = modalUtil.init(submitModalData)
+                submitModal.show()
+
+
                 return false;
             });
 
@@ -96,6 +169,7 @@
                 }else {
                     $("#distpicker").distpicker();
                 }
+                $("input").attr("required","required")
                 init = function () {}
             };
             init();

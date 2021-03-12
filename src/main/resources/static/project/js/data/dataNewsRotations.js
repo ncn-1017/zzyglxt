@@ -45,7 +45,17 @@
                                             return alertUtil.error("图片删除失败");
                                         }
                                     },false,"","get");
-                                    alertUtil.info("删除新闻轮播图成功");
+                                    var submitConfirmModal = {
+                                        modalBodyID :"myTopicSubmitTip",
+                                        modalTitle : "提示",
+                                        modalClass : "modal-lg",
+                                        cancelButtonStyle: "display:none",
+                                        modalConfirmFun:function (){
+                                            return true;
+                                        }
+                                    }
+                                    var submitConfirm = modalUtil.init(submitConfirmModal);
+                                    submitConfirm.show();
                                     isSuccess = true;
                                     refreshTable();
                                 }
@@ -83,11 +93,17 @@
                             ajaxUtil.myAjax(null,"/datado/newsInf/changeNewsStatus/"+row.itemid+"/"+row.itemcode,submitStatus,function (data) {
                                 if(ajaxUtil.success(data)){
                                     if(data.code == 88888){
-                                        if(sessionStorage.getItem("rolename") == "政务资源处长"){
-                                            alertUtil.info("审核已通过，已发送给综合处处长做最后审核！");
-                                        }else{
-                                            alertUtil.info("审核已通过，已上架！");
+                                        var submitConfirmModal = {
+                                            modalBodyID :"myTopicSubmitTip",
+                                            modalTitle : "提示",
+                                            modalClass : "modal-lg",
+                                            cancelButtonStyle: "display:none",
+                                            modalConfirmFun:function (){
+                                                return true;
+                                            }
                                         }
+                                        var submitConfirm = modalUtil.init(submitConfirmModal);
+                                        submitConfirm.show();
                                         isSuccess = true;
                                         refreshTable();
                                     }else{
@@ -121,7 +137,17 @@
                             ajaxUtil.myAjax(null,"/datado/newsInf/changeNewsStatus/"+row.itemid+"/"+row.itemcode,submitStatus,function (data) {
                                 if(ajaxUtil.success(data)){
                                     if(data.code == 88888){
-                                        alertUtil.info("操作成功");
+                                        var submitConfirmModal = {
+                                            modalBodyID :"myTopicSubmitTip",
+                                            modalTitle : "提示",
+                                            modalClass : "modal-lg",
+                                            cancelButtonStyle: "display:none",
+                                            modalConfirmFun:function (){
+                                                return true;
+                                            }
+                                        }
+                                        var submitConfirm = modalUtil.init(submitConfirmModal);
+                                        submitConfirm.show();
                                         isSuccess = true;
                                         refreshTable();
                                     }else{
@@ -150,7 +176,17 @@
                             ajaxUtil.myAjax(null,"/datado/newsInf/changeNewsStatus/"+row.itemid+"/"+row.itemcode,submitStatus,function (data) {
                                 if(ajaxUtil.success(data)){
                                     if(data.code == 88888){
-                                        alertUtil.success("下架成功");
+                                        var submitConfirmModal = {
+                                            modalBodyID :"myTopicSubmitTip",
+                                            modalTitle : "提示",
+                                            modalClass : "modal-lg",
+                                            cancelButtonStyle: "display:none",
+                                            modalConfirmFun:function (){
+                                                return true;
+                                            }
+                                        }
+                                        var submitConfirm = modalUtil.init(submitConfirmModal);
+                                        submitConfirm.show();
                                         isSuccess = true;
                                         refreshTable();
                                     }else{
@@ -183,9 +219,9 @@
                     $("#dataStatus").val(webStatus[row.dataStatus].text);
                     $("#dataFileType").val(webLocation[row.dataLocation].text);
                     $("#newsImg").attr("src",row.filePath);
-                    $('#newsImgSpan').html("新闻图片");
-                    $('#dataTitleSpan').html("新闻标题");
-                    $('#dataFileTypeSpan').html("所属位置");
+                    $('#newsImgSpan').html("新闻图片：");
+                    $('#dataTitleSpan').html("新闻标题：");
+                    $('#dataFileTypeSpan').html("所属位置：");
 
                     myNewsRotationsModal.show();
                 },
@@ -203,7 +239,17 @@
                             ajaxUtil.myAjax(null,"/datado/newsInf/changeNewsStatus/"+row.itemid+"/"+row.itemcode,submitStatus,function (data) {
                                 if(ajaxUtil.success(data)){
                                     if(data.code == 88888){
-                                        alertUtil.info("已提交");
+                                        var submitConfirmModal = {
+                                            modalBodyID :"myTopicSubmitTip",
+                                            modalTitle : "提示",
+                                            modalClass : "modal-lg",
+                                            cancelButtonStyle: "display:none",
+                                            modalConfirmFun:function (){
+                                                return true;
+                                            }
+                                        }
+                                        var submitConfirm = modalUtil.init(submitConfirmModal);
+                                        submitConfirm.show();
                                         isSuccess = true;
                                         refreshTable();
                                     }else{
@@ -233,7 +279,17 @@
                             ajaxUtil.myAjax(null,"/datado/newsInf/changeNewsStatus/"+row.itemid+"/"+row.itemcode,submitStatus,function (data) {
                                 if(ajaxUtil.success(data)){
                                     if(data.code == 88888){
-                                        alertUtil.info("已提交");
+                                        var submitConfirmModal = {
+                                            modalBodyID :"myTopicSubmitTip",
+                                            modalTitle : "提示",
+                                            modalClass : "modal-lg",
+                                            cancelButtonStyle: "display:none",
+                                            modalConfirmFun:function (){
+                                                return true;
+                                            }
+                                        }
+                                        var submitConfirm = modalUtil.init(submitConfirmModal);
+                                        submitConfirm.show();
                                         isSuccess = true;
                                         refreshTable();
                                     }else{
@@ -257,8 +313,7 @@
             orange.redirect(addUrl);
         });
 
-        var pl = dictUtil.getDictByCode(dictUtil.DICT_LIST.showStatus);
-        $("#chargePersonSearch").selectUtil(pl);
+        $("#chargePersonSearch").selectUtil(selectUtil.inSearchStatus());
 
         var aCol = [
             {field: 'dataTitle', title: '新闻标题'},
@@ -286,16 +341,11 @@
             myTable.free();
             myTable = bootstrapTableUtil.myBootStrapTableInit("table", url, param, aCol);
         }
-            var allTableData = $("#table").bootstrapTable("getData");
-
-            localStorage.setItem('2',JSON.stringify(allTableData))
-            obj2=JSON.parse(localStorage.getItem("2"));
-
 
         var allPosition = document.getElementById("allPosition").children;
         for(var i=1;i<allPosition.length;i++){
-
             allPosition[i].onclick=function () {
+                var addstr=document.getElementById("chargePersonSearch").value; //搜索里的
                 for(var j=1;j<allPosition.length;j++){
                     allPosition[j].classList.remove("addC");
                 }
@@ -314,14 +364,29 @@
                 }else if (str=='位置五'){
                     str=4;
                 }
-
-
                 if (str=='全部'){
-                    refreshTable()
+                    for (var i in allTableData) {
+                        var status= allTableData[i]["dataStatus"] //表格里的
+                        if(status == "0") status =0;
+                        else if(status == "1" || status == "2") status = 1;
+                        else if(status == "3" || status == "4") status = 2;
+                        else if(status == "5") status = 3;
+                        else if (status == "6") status = 4;
+                        if (addstr== status || addstr ==99 ) {
+                            newArry.push(allTableData[i]);
+                        }
+                    }
+                    $("#table").bootstrapTable("load", newArry);
                 }else {
                     for (var i in allTableData) {
                         var thisPosition = allTableData[i][aCol[2].field];
-                        if (thisPosition == str) {
+                        var status= allTableData[i]["dataStatus"] //表格里的
+                        if(status == "0") status =0;
+                        else if(status == "1" || status == "2") status = 1;
+                        else if(status == "3" || status == "4") status = 2;
+                        else if(status == "5") status = 3;
+                        else if (status == "6") status = 4;
+                    if (thisPosition == str && (addstr== status || addstr ==99 )) {
                             newArry.push(allTableData[i]);
                         }
                     }

@@ -44,8 +44,17 @@
                                             return alertUtil.error("文件删除失败，可能已经损坏了");
                                         }
                                     },false,"","get");
-                                    alertUtil.info("删除非物质文化遗产信息成功");
-                                    isSuccess = true;
+                                    var submitConfirmModal = {
+                                        modalBodyID :"myTopicSubmitTip",
+                                        modalTitle : "提示",
+                                        modalClass : "modal-lg",
+                                        cancelButtonStyle: "display:none",
+                                        modalConfirmFun:function (){
+                                            return true;
+                                        }
+                                    }
+                                    var submitConfirm = modalUtil.init(submitConfirmModal);
+                                    submitConfirm.show();                                    isSuccess = true;
                                     refreshTable();
                                 }
                             },false,true,"delete");
@@ -70,11 +79,17 @@
                             ajaxUtil.myAjax(null,"/cul/fac/inCuHe/cgInCuHeSta/"+row.itemid+"/"+row.itemcode,submitStatus,function (data) {
                                 if(ajaxUtil.success(data)){
                                     if(data.code == 88888){
-                                        if(sessionStorage.getItem("rolename") == "文化宣传处长"){
-                                            alertUtil.info("审核已通过，已发送给综合处处长做最后审核！");
-                                        }else{
-                                            alertUtil.info("审核已通过，已上架！");
+                                        var submitConfirmModal = {
+                                            modalBodyID :"myTopicSubmitTip",
+                                            modalTitle : "提示",
+                                            modalClass : "modal-lg",
+                                            cancelButtonStyle: "display:none",
+                                            modalConfirmFun:function (){
+                                                return true;
+                                            }
                                         }
+                                        var submitConfirm = modalUtil.init(submitConfirmModal);
+                                        submitConfirm.show();
                                         isSuccess = true;
                                         refreshTable();
                                     }else{
@@ -108,7 +123,17 @@
                             ajaxUtil.myAjax(null,"/cul/fac/inCuHe/cgInCuHeSta/"+row.itemid+"/"+row.itemcode,submitStatus,function (data) {
                                 if(ajaxUtil.success(data)){
                                     if(data.code == 88888){
-                                        alertUtil.info("操作成功");
+                                        var submitConfirmModal = {
+                                            modalBodyID :"myTopicSubmitTip",
+                                            modalTitle : "提示",
+                                            modalClass : "modal-lg",
+                                            cancelButtonStyle: "display:none",
+                                            modalConfirmFun:function (){
+                                                return true;
+                                            }
+                                        }
+                                        var submitConfirm = modalUtil.init(submitConfirmModal);
+                                        submitConfirm.show();
                                         isSuccess = true;
                                         refreshTable();
                                     }else{
@@ -137,7 +162,17 @@
                             ajaxUtil.myAjax(null,"/cul/fac/inCuHe/cgInCuHeSta/"+row.itemid+"/"+row.itemcode,submitStatus,function (data) {
                                 if(ajaxUtil.success(data)){
                                     if(data.code == 88888){
-                                        alertUtil.success("下架成功");
+                                        var submitConfirmModal = {
+                                            modalBodyID :"myTopicSubmitTip",
+                                            modalTitle : "提示",
+                                            modalClass : "modal-lg",
+                                            cancelButtonStyle: "display:none",
+                                            modalConfirmFun:function (){
+                                                return true;
+                                            }
+                                        }
+                                        var submitConfirm = modalUtil.init(submitConfirmModal);
+                                        submitConfirm.show();
                                         isSuccess = true;
                                         refreshTable();
                                     }else{
@@ -157,7 +192,7 @@
                     var myViewInCuHeModalData ={
                         modalBodyID : "myViewCulturalModal", //公用的在后面给span加不同的内容就行了，其他模块同理
                         modalTitle : "查看详情",
-                        modalClass : "modal-lg",
+                        modalClass : "modal-xl",
                         confirmButtonStyle: "display:none",
                     };
                     var myTravelModal = modalUtil.init(myViewInCuHeModalData);
@@ -169,9 +204,9 @@
                     $("#itemCreateAt").val(row.itemcreateat);
                     $("#chineseCulturalStatus").val(webStatus[row.chineseCulturalStatus].text);
                     $("#culturalImg").attr("src",row.filePath)
-                    $('#culturalImgSpan').html("非物质文化遗产图片");
-                    $('#culturalNameSpan').html("非物质文化遗产名称");
-                    $('#culturalContentSpan').html("非物质文化遗产介绍");
+                    $('#culturalImgSpan').html("非物质文化遗产图片：");
+                    $('#culturalNameSpan').html("非物质文化遗产名称：");
+                    $('#culturalContentSpan').html("非物质文化遗产介绍：");
 
                     myTravelModal.show();
                 },
@@ -189,7 +224,17 @@
                             ajaxUtil.myAjax(null,"/cul/fac/inCuHe/cgInCuHeSta/"+row.itemid+"/"+row.itemcode,submitStatus,function (data) {
                                 if(ajaxUtil.success(data)){
                                     if(data.code == 88888){
-                                        alertUtil.info("已提交");
+                                        var submitConfirmModal = {
+                                            modalBodyID :"myTopicSubmitTip",
+                                            modalTitle : "提示",
+                                            modalClass : "modal-lg",
+                                            cancelButtonStyle: "display:none",
+                                            modalConfirmFun:function (){
+                                                return true;
+                                            }
+                                        }
+                                        var submitConfirm = modalUtil.init(submitConfirmModal);
+                                        submitConfirm.show();
                                         isSuccess = true;
                                         refreshTable();
                                     }else{
@@ -219,7 +264,17 @@
                             ajaxUtil.myAjax(null,"/cul/fac/inCuHe/cgInCuHeSta/"+row.itemid+"/"+row.itemcode,submitStatus,function (data) {
                                 if(ajaxUtil.success(data)){
                                     if(data.code == 88888){
-                                        alertUtil.info("已提交");
+                                        var submitConfirmModal = {
+                                            modalBodyID :"myTopicSubmitTip",
+                                            modalTitle : "提示",
+                                            modalClass : "modal-lg",
+                                            cancelButtonStyle: "display:none",
+                                            modalConfirmFun:function (){
+                                                return true;
+                                            }
+                                        }
+                                        var submitConfirm = modalUtil.init(submitConfirmModal);
+                                        submitConfirm.show();
                                         isSuccess = true;
                                         refreshTable();
                                     }else{
@@ -244,8 +299,7 @@
                 orange.redirect(url);
             });
 
-            var pl = dictUtil.getDictByCode(dictUtil.DICT_LIST.showStatus);
-            $("#chargePersonSearch").selectUtil(pl);
+            $("#chargePersonSearch").selectUtil(selectUtil.inSearchStatus());
 
             var aCol = [
                 {field: 'chineseCulturalName', title: '非物质文化遗产名称'},
@@ -270,11 +324,7 @@
                 myTable = bootstrapTableUtil.myBootStrapTableInit("table", url, param, aCol);
             }
 
-            bootstrapTableUtil.globalSearch("table",url,aParam, aCol);
-            var allTableData = $("#table").bootstrapTable("getData");
-
-            localStorage.setItem('2',JSON.stringify(allTableData))
-            obj2=JSON.parse(localStorage.getItem("2"));
+            bootstrapTableUtil.globalSearch2("table", url, aParam, aCol, "chineseCulturalStatus")
 
         })
 })();

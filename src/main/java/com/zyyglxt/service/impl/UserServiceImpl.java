@@ -17,6 +17,7 @@ import com.zyyglxt.util.UUIDUtils;
 import com.zyyglxt.util.UsernameUtil;
 import com.zyyglxt.validator.ValidatorImpl;
 import com.zyyglxt.validator.ValidatorResult;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -26,6 +27,7 @@ import javax.annotation.Resource;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.regex.Pattern;
 
 /**
  * @Author wanglx
@@ -62,10 +64,16 @@ public class UserServiceImpl implements UserService {
         userDOKey.setItemid(userDO.getItemid());
         userDOKey.setItemcode(userDO.getItemcode());
         userDOMapper.deleteByPrimaryKey(userDOKey);
-        //删除hospital
-        OrganizationDO organizationDO = organizationDOMapper.selectByOrgName(userDtO.getOrgName());
-        if (organizationDO != null) {
-            organizationDOMapper.deleteByPrimaryKey(organizationDO.getItemid());
+//        if (!"主研人".equals(userRoleRefDO.getPlatRole())){
+////            //删除organization
+////            OrganizationDO organizationDO = organizationDOMapper.selectByOrgName(userDtO.getOrgName());
+////            if (organizationDO != null) {
+////                organizationDOMapper.deleteByPrimaryKey(organizationDO.getItemid());
+////            }
+////        }
+        // 企业信息录入页面取消按钮删除企业信息
+        if (!StringUtils.isBlank(userDtO.getOrgCode())){
+            organizationDOMapper.deleteByNameAndCode(userDtO.getOrgName(),userDtO.getOrgCode());
         }
     }
 
@@ -82,19 +90,32 @@ public class UserServiceImpl implements UserService {
             throw new BusinessException(result.getErrMsg(), EmBusinessError.PARAMETER_VALIDATION_ERROR);
         }
         // 验证手机号码
-        if (!MobileUtil.checkPhone(record.getMobilephone())) {
-            throw new BusinessException("手机号码不正确", EmBusinessError.MOBILEPHONE_ERROR);
+        if (!MobileUtil.checkPhone(record.getMobilephone()) && !MobileUtil.isPhone(record.getMobilephone())) {
+            throw new BusinessException("联系电话不正确", EmBusinessError.MOBILEPHONE_ERROR);
         }
         // 用户名的唯一性
         UserDO userDO = userDOMapper.selectByUsername(record.getUsername());
         if (userDO != null) {
             throw new BusinessException("用户名已存在", EmBusinessError.USER_ACCOUNT_ALREADY_EXIST);
         }
+        //用户账号：字母开头，至少5位，别超过12个字符
+        Pattern reg = Pattern.compile("^[a-zA-Z]([\\s\\S]{4,11})$");
+        if (!reg.matcher(record.getUsername()).matches()){
+            throw new BusinessException("用户账号须以字母开头，长度为5-12位", EmBusinessError.USERNAME_ERROR);
+        }
         if (record.getRoleName().equals("市级中医药管理部门")){
+            OrganizationDO organizationDO = organizationDOMapper.selectByOrgName(record.getRoleName());
+            record.setOrgCode(organizationDO.getItemcode());
             record.setRoleName("科研项目-市级");
             record.setType(21);
         } else if (record.getRoleName().equals("科研项目申报单位")){
+            OrganizationDO organizationDO = organizationDOMapper.selectByOrgName(record.getRoleName());
+            record.setOrgCode(organizationDO.getItemcode());
             record.setType(8);
+        } else if (record.getRoleName().equals("主研人")){
+//            OrganizationDO organizationDO = organizationDOMapper.selectByOrgName("科研项目申报单位");
+//            record.setOrgCode(organizationDO.getItemcode());
+            record.setType(7);
         }
         //添加用户
         record.setUpdater(usernameUtil.getOperateUser());
@@ -149,7 +170,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public void resetPassword(UserDO userDO) {
         BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
-        String password = encoder.encode("1234");
+        String password = encoder.encode("123456");
         userDO.setPassword(password);
         userDOMapper.updateByPrimaryKeySelective(userDO);
     }
@@ -165,26 +186,22 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public List<UserDO> selectAllUser() {
-        List<UserDO> users = userDOMapper.selectAllUser();
-
-        System.out.println("66666666666666666666: "+users.size());
-
-        int zyr = roleDOMapper.selectByRoleName("主研人").getRoleType();
-        int sbdw = roleDOMapper.selectByRoleName("科研项目申报单位").getRoleType();
-        int kysj = roleDOMapper.selectByRoleName("科研项目-市级").getRoleType();
-        int zj = roleDOMapper.selectByRoleName("专家").getRoleType();
-
+    public List<UserDO> selectAllUser(String itemcode, String username) {
+        UserDO userDO = userDOMapper.selectByUsername(username);
         List<UserDO> userDOList = new ArrayList<UserDO>();
-        for (int i = 0; i < users.size(); i++) {
-            int roleytpe = users.get(i).getType();
-            if (zyr == roleytpe || sbdw == roleytpe || kysj == roleytpe || zj == roleytpe) {
-
-                userDOList.add(users.get(i));
-            }
+        if (userDO.getType() == 22) {
+            userDOList = userDOMapper.selectAllUser(itemcode, username);
+        } else {
+            userDOList = userDOMapper.selectAllUser2(itemcode, username,usernameUtil.getOrgItemCode());
         }
 
         return userDOList;
+    }
+
+    @Override
+    public List<UserDO> selectAllUser3(String itemcode, String username) {
+        //UserDO userDO = userDOMapper.selectByUsername(username);
+        return userDOMapper.selectAllUser3(itemcode, username);
     }
 
     @Override

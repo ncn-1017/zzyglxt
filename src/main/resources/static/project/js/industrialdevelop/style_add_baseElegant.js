@@ -1,6 +1,6 @@
 (function () {
-    require(['jquery','wangEditor','ajaxUtil','alertUtil','stringUtil','fileUtil','uploadImg','dictUtil'],
-        function (jquery,wangEditor,ajaxUtil,alertUtil,stringUtil,fileUtil,uploadImg,dictUtil) {
+    require(['jquery','wangEditor','ajaxUtil','alertUtil','stringUtil','fileUtil','uploadImg','dictUtil','modalUtil'],
+        function (jquery,wangEditor,ajaxUtil,alertUtil,stringUtil,fileUtil,uploadImg,dictUtil,modalUtil) {
             var type = isUpdate() ? "put" : "post" ;
 
             uploadImg.init();
@@ -8,17 +8,14 @@
             var showStatus = dictUtil.getDictByCode(dictUtil.DICT_LIST.showStatus);
 
             $("#cancel").unbind().on('click',function () {
-                var url = "/industrialdevelop/style";
-                orange.redirect(url);
+                orange.redirect("/industrialdevelop/organization/tour");
             });
 
             $("#btn_save").unbind().on('click',function () {
                 var baseStyleEntity;
                 var addUpdateUrl;
-                var operateMessage;
                 if(!isUpdate()){
                     addUpdateUrl = "/industrialdevelop/base-style";
-                    operateMessage = "保存成功";
                     baseStyleEntity = {
                         itemcode : stringUtil.getUUID(),
                         status : showStatus[0].id,
@@ -29,8 +26,8 @@
                     baseStyleEntity = {
                         itemid: needData.itemid,
                         itemcode: needData.itemcode,
+                        status : showStatus[0].id,
                     }
-                    operateMessage = "更新基地风采成功";
                 }
 
                 fileUtil.handleFile(isUpdate(), baseStyleEntity.itemcode, uploadImg.getFiles()[0]);
@@ -38,9 +35,19 @@
                 ajaxUtil.myAjax(null,addUpdateUrl,baseStyleEntity,function (data) {
                     if(ajaxUtil.success(data)){
                         if(data.code == ajaxUtil.successCode) {
-                            alertUtil.info(operateMessage);
-                            var url = "/industrialdevelop/style";
-                            orange.redirect(url);
+                            var submitConfirmModal = {
+                                modalBodyID :"myTopicSubmitTip",
+                                modalTitle : "提示",
+                                modalClass : "modal-lg",
+                                cancelButtonStyle: "display:none",
+                                modalConfirmFun:function (){
+                                    var url = "/industrialdevelop/organization/tour";
+                                    orange.redirect(url);
+                                    return true;
+                                }
+                            }
+                            var submitConfirm = modalUtil.init(submitConfirmModal);
+                            submitConfirm.show();
                         }else{
                             alertUtil.error(data.msg);
                         }
@@ -48,51 +55,71 @@
                         alertUtil.error(data.msg);
                     }
                 },false,true,type);
-
+                return false;
             });
 
             $("#btn_insert").unbind().on('click',function () {
-                var baseStyleEntity;
-                var addUpdateUrl;
-                var operateMessage;
-                if(!isUpdate()){
-                    addUpdateUrl = "/industrialdevelop/base-style";
-                    operateMessage = "上传基地风采成功";
-                    baseStyleEntity = {
-                        itemcode : stringUtil.getUUID(),
-                        status : showStatus[1].id,
-                    };
-                }else{
-                    var needData = JSON.parse(localStorage.getItem("rowData"));
-                    addUpdateUrl = "/industrialdevelop/base-style";
-                    baseStyleEntity = {
-                        itemid: needData.itemid,
-                        itemcode: needData.itemcode,
-                    }
-                    operateMessage = "更新基地风采成功";
-                }
-
-                fileUtil.handleFile(isUpdate(), baseStyleEntity.itemcode, uploadImg.getFiles()[0]);
-
-                ajaxUtil.myAjax(null,addUpdateUrl,baseStyleEntity,function (data) {
-                    if(ajaxUtil.success(data)){
-                        if(data.code == ajaxUtil.successCode) {
-                            alertUtil.info(operateMessage+"，信息将展示在主页");
-                            var url = "/industrialdevelop/style";
-                            orange.redirect(url);
+                var mySubmitToCZ = {
+                    modalBodyID: "muPublishIndustrial",
+                    modalTitle: "提交",
+                    modalClass: "modal-lg",
+                    modalConfirmFun:function (){
+                        var baseStyleEntity;
+                        var addUpdateUrl;
+                        if(!isUpdate()){
+                            addUpdateUrl = "/industrialdevelop/base-style";
+                            baseStyleEntity = {
+                                itemcode : stringUtil.getUUID(),
+                                status : showStatus[1].id,
+                            };
                         }else{
-                            alertUtil.error(data.msg);
+                            var needData = JSON.parse(localStorage.getItem("rowData"));
+                            addUpdateUrl = "/industrialdevelop/base-style";
+                            baseStyleEntity = {
+                                itemid: needData.itemid,
+                                itemcode: needData.itemcode,
+                                status : showStatus[1].id,
+                            }
                         }
-                    }else {
-                        alertUtil.error(data.msg);
+
+                        fileUtil.handleFile(isUpdate(), baseStyleEntity.itemcode, uploadImg.getFiles()[0]);
+
+                        ajaxUtil.myAjax(null,addUpdateUrl,baseStyleEntity,function (data) {
+                            if(ajaxUtil.success(data)){
+                                if(data.code == ajaxUtil.successCode) {
+                                    var submitConfirmModal = {
+                                        modalBodyID :"myTopicSubmitTip",
+                                        modalTitle : "提示",
+                                        modalClass : "modal-lg",
+                                        cancelButtonStyle: "display:none",
+                                        modalConfirmFun:function (){
+                                            var url = "/industrialdevelop/organization/tour";
+                                            orange.redirect(url);
+                                            return true;
+                                        }
+                                    }
+                                    var submitConfirm = modalUtil.init(submitConfirmModal);
+                                    submitConfirm.show();
+                                }else{
+                                    alertUtil.error(data.msg);
+                                }
+                            }else {
+                                alertUtil.error(data.msg);
+                            }
+                        },false,true,type);
+                        return true;
                     }
-                },false,true,type);
+                }
+                var x = modalUtil.init(mySubmitToCZ);
+                x.show();
+                return false;
 
             });
 
 
             (function init() {
                 if (isUpdate()){
+                    $(".titleCSS").text("修改基地风采照片")
                     var tempdata = JSON.parse(localStorage.getItem("rowData"));
                     var img = tempdata.filePath;
                     // var imgName=tempdata.fileName;

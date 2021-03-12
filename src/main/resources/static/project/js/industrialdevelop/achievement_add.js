@@ -1,6 +1,6 @@
 (function () {
-    require(['jquery', 'ajaxUtil', 'stringUtil', 'objectUtil', 'dictUtil', 'alertUtil','fileUtil'],
-        function (jquery, ajaxUtil, stringUtil, objectUtil, dictUtil, alertUtil, fileUtil) {
+    require(['jquery', 'ajaxUtil', 'stringUtil', 'objectUtil', 'dictUtil', 'alertUtil','fileUtil','modalUtil'],
+        function (jquery, ajaxUtil, stringUtil, objectUtil, dictUtil, alertUtil, fileUtil,modalUtil) {
 
             var type = isUpdate() ? "put" : "post";
 
@@ -9,13 +9,6 @@
             const editor = objectUtil.wangEditorUtil();
 
             var showStatus = dictUtil.getDictByCode(dictUtil.DICT_LIST.showStatus);
-
-            var operateMsg;
-            if(!isUpdate()){
-                operateMsg = "新增成功";
-            }else{
-                operateMsg = "更新成功";
-            }
 
             //后台数据交互地址
             var url = "/industrialdevelop/achievement";
@@ -47,6 +40,34 @@
                 return param;
             }
 
+            function checkParam(param) {
+                if (stringUtil.isBlank(param.industrialDevelopLeader)){
+                    alertUtil.error("主研人不能为空")
+                    return false
+                }
+                if (stringUtil.isBlank(param.industrialDevelopName)){
+                    alertUtil.error("研究成果不能为空")
+                    return false
+                }
+                if (stringUtil.isBlank(param.contacts)){
+                    alertUtil.error("联系人不能为空")
+                    return false
+                }
+                if (stringUtil.isBlank(param.phone)){
+                    alertUtil.error("联系方式不能为空")
+                    return false
+                }
+                if (stringUtil.isBlank(param.context)){
+                    alertUtil.error("成果简介不能为空")
+                    return false
+                }
+                if (stringUtil.isBlank(param.projectName)){
+                    alertUtil.error("项目简介不能为空")
+                    return false
+                }
+                return true
+            }
+
 
             $("#saveBtn").unbind('click').on('click', function () {
                 var param = generateParam();
@@ -55,30 +76,68 @@
                 ajaxUtil.myAjax(null, url, param, function (data) {
                     if (ajaxUtil.success(data)) {
                         fileUtil.handleFile(isUpdate(), param.itemcode, $("#upload_file")[0].files[0]);
-                        alertUtil.success(operateMsg);
-                        orange.redirect(url)
+                        var submitConfirmModal = {
+                            modalBodyID :"myTopicSubmitTip",
+                            modalTitle : "提示",
+                            modalClass : "modal-lg",
+                            cancelButtonStyle: "display:none",
+                            modalConfirmFun:function (){
+                                orange.redirect(url)
+                                return true;
+                            }
+                        }
+                        var submitConfirm = modalUtil.init(submitConfirmModal);
+                        submitConfirm.show();
+
                     } else {
-                        alert(data.msg)
+                        alertUtil.error(data.msg)
                     }
                 }, true, "123", type);
+                return false;
             });
 
             $("#submitBtn").unbind('click').on('click', function () {
-                var param = generateParam();
-                param.industrialDevelopStatus = showStatus[1].id;
-                ajaxUtil.myAjax(null, url, param, function (data) {
-                    if (ajaxUtil.success(data)) {
-                        fileUtil.handleFile(isUpdate(), param.itemcode, $("#upload_file")[0].files[0]);
-                        alertUtil.success(operateMsg+"，信息将展示在主页");
-                        orange.redirect(url)
+                var mySubmitToCZ = {
+                    modalBodyID: "muPublishIndustrial",
+                    modalTitle: "提交",
+                    modalClass: "modal-lg",
+                    modalConfirmFun:function (){
+                        var param = generateParam();
+                        if (!checkParam(param)){
+                            return
+                        }
+                        param.industrialDevelopStatus = showStatus[1].id;
+                        ajaxUtil.myAjax(null, url, param, function (data) {
+                            if (ajaxUtil.success(data)) {
+                                fileUtil.handleFile(isUpdate(), param.itemcode, $("#upload_file")[0].files[0]);
+                                var submitConfirmModal = {
+                                    modalBodyID :"myTopicSubmitTip",
+                                    modalTitle : "提示",
+                                    modalClass : "modal-lg",
+                                    cancelButtonStyle: "display:none",
+                                    modalConfirmFun:function (){
+                                        orange.redirect(url)
+                                        return true;
+                                    }
+                                }
+                                var submitConfirm = modalUtil.init(submitConfirmModal);
+                                submitConfirm.show();
+                            }else{
+                                alertUtil.error(data.msg)
+                            }
+                        }, true, "123", type);
+                        return true;
                     }
-                }, true, "123", type);
+                }
+                var x = modalUtil.init(mySubmitToCZ);
+                x.show();
                 return false;
             });
 
 
             var init = function () {
                 if (isUpdate()) {
+                    $(".titleCSS").text("修改科研成果")
                     var tempdata = JSON.parse(localStorage.getItem("rowData"));
                     $("#industrialDevelopLeader").val(tempdata.industrialDevelopLeader);
                     $("#industrialDevelopName").val(tempdata.industrialDevelopName);
@@ -88,6 +147,7 @@
                     editor.txt.html(tempdata.context);
                     $("#addFile").text(tempdata.fileName);
                 }
+                $("input").attr("required","required")
                 init = function () {
                 }
             };
@@ -115,8 +175,7 @@
                 }
             }
             document.getElementById('clsfile').onclick = function () {
-                var obj = document.getElementById('upload_file');
-                obj.outerHTML = obj.outerHTML;
+                $('#upload_file').val('');
                 $("#clsfile").css("display", "none");
                 $("#addFile").empty("p");
             }

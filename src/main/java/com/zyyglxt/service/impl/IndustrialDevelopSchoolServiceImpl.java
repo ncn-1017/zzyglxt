@@ -83,7 +83,7 @@ public class IndustrialDevelopSchoolServiceImpl implements IndustrialDevelopScho
         if (record.getAddressCity() != null){
             OrganizationDO updated = new OrganizationDO();
             updated.setOrgLocate(record.getAddressCity());
-            organizationDOMapper.updateByOrgCode(updated,record.getOrgCode());
+            organizationDOMapper.updateByOrgCode(updated,usernameUtil.getOrgCode());
         }
         return industrialDevelopSchoolMapper.updateByPrimaryKeySelective(record);
     }
@@ -115,10 +115,6 @@ public class IndustrialDevelopSchoolServiceImpl implements IndustrialDevelopScho
 
     @Override
     public IndustrialDevelopSchoolDto selectByorgcode() {
-        IndustrialDevelopSchoolDto schoolDto = new IndustrialDevelopSchoolDto();
-        IndustrialDevelopSchool developSchoolDto = industrialDevelopSchoolMapper.selectByorgcode(usernameUtil.getOrgCode());
-        BeanUtils.copyProperties(developSchoolDto, schoolDto);
-        schoolDto.setFilePath(fileService.selectFileByDataCode(developSchoolDto.getItemcode()).getFilePath());
-        return schoolDto;
+        return industrialDevelopSchoolMapper.selectByorgcode(usernameUtil.getOrgCode());
     }
 }

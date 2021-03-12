@@ -1,6 +1,7 @@
 package com.zyyglxt.dao;
 
 import com.zyyglxt.dataobject.IndustrialDevelopTecSerOrg;
+import com.zyyglxt.dto.industrialDevelop.IndustrialDevelopTecSerOrgDto;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
@@ -21,7 +22,7 @@ public interface IndustrialDevelopTecSerOrgMapper {
 
     IndustrialDevelopTecSerOrg selectByPrimaryKey(@Param("itemid") Integer itemid, @Param("itemcode") String itemcode);
 
-    IndustrialDevelopTecSerOrg selectByOrgcode(@Param("orgCode") String orgCode);
+    IndustrialDevelopTecSerOrgDto selectByOrgcode(@Param("orgCode") String orgCode);
 
     int updateByPrimaryKeySelective(IndustrialDevelopTecSerOrg record);
 
@@ -29,5 +30,5 @@ public interface IndustrialDevelopTecSerOrgMapper {
 
     List<IndustrialDevelopTecSerOrg> selectAll(@Param("type") String type);
 
-    IndustrialDevelopTecSerOrg selectByOrgNameAndCode(String orgName, String orgCode);
+    IndustrialDevelopTecSerOrg selectByOrgNameAndCode(@Param("orgName") String orgName, @Param("orgCode")String orgCode);
 }
